@@ -1,0 +1,6 @@
+@font-face {
+    font-family: 'lato';
+    font-style: normal;
+    font-weight: normal;
+    src: local('lato'), url('./lato.ttf') format('truetype');
+}
