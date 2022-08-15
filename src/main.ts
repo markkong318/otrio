@@ -28,8 +28,8 @@ font.load()
       height: window.innerHeight,
       resizeTo: window,
       antialias: true,
-      resolution: 2,
-      autoResize: true,
+      resolution: window.devicePixelRatio || 1,
+      autoDensity: true,
     });
     document.body.appendChild(app.view);
 

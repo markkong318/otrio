@@ -1,16 +1,18 @@
-import {GameView} from "./view/game-view";
-import {GameModel} from "./model/game-model";
-import {GameController} from "./controller/game-controller";
-import {Application} from "../framework/application"
-import {Size} from "../framework/size";
-import Bottle from "../framework/bottle";
+import {GameView} from './view/game-view';
+import {GameModel} from './model/game-model';
+import {GameController} from './controller/game-controller';
+import {Application} from '../framework/application';
+import {Size} from '../framework/size';
 import {Storage} from './storage/storage';
+import bottle from '../framework/bottle';
+import {CircleTexture} from './texture/circle-texture';
 
 export class GameApplication extends Application {
   private gameModel: GameModel;
   private gameController: GameController;
   private gameView: GameView;
   private storage: Storage;
+  private circleTexture: CircleTexture;
 
   constructor(options?) {
     super(options);
@@ -29,16 +31,17 @@ export class GameApplication extends Application {
   }
 
   public initScene(): void {
-    Bottle.set('renderer', this.renderer);
+    bottle.setObject(this.renderer);
 
     this.gameModel = new GameModel();
-    Bottle.set('gameModel', this.gameModel);
 
-    this.gameController = new GameController();
+
 
     this.storage = new Storage();
     this.storage.init();
-    Bottle.set('storage', this.storage);
+
+    this.circleTexture = new CircleTexture();
+    this.circleTexture.init();
 
     const viewWidth = 480;
     const viewHeight = this.getViewHeight(viewWidth);
@@ -50,6 +53,10 @@ export class GameApplication extends Application {
     this.stage.addChild(this.gameView);
 
     this.resizeView();
+
+    this.gameController = new GameController();
+    this.gameController.init();
+    this.gameController.start();
   }
 
   public getViewHeight(viewWidth) {
