@@ -11,6 +11,9 @@ import {
   CELL_LEVEL_3
 } from '../env/cell';
 import {PLAYER_1_ID, PLAYER_2_ID, PLAYER_3_ID, PLAYER_4_ID, PLAYER_NONE} from '../env/game';
+import event from '../../framework/event';
+import {EVENT_CELL_MOVE, EVENT_CELL_OUT, EVENT_UPDATE_BATTLE} from '../env/event';
+import {EventCellMoveMsg, EventCellOutMsg, EventUpdateBattleMsg} from '../env/msg';
 
 export class BoardView extends View {
   private battleCellViews: CellView[][];
@@ -34,6 +37,9 @@ export class BoardView extends View {
     this.initPlayer2();
     this.initPlayer3();
     this.initPlayer4();
+
+    event.on(EVENT_CELL_MOVE, (msg) => this.onBattlePointerMove(msg));
+    event.on(EVENT_CELL_OUT, (msg) => this.onBattlePointerOut(msg));
   }
 
   initBattle() {
@@ -202,30 +208,26 @@ export class BoardView extends View {
     }
   }
 
-  onBattleViewOver(view: CellView) {
+  getBattlePosition(view: CellView) {
     const x = view.x + view.width / 2;
     const y = view.y + view.height / 2;
-
-    let selectedX = -1;
-    let selectedY = -1;
-    let found = false;
 
     for (let i = 0; i < this.battleCellViews.length; i++) {
       for (let j = 0; j < this.battleCellViews[i].length; j++) {
         const cellView = this.battleCellViews[i][j];
         if (cellView.x < x && (cellView.x + cellView.width) > x &&
-          cellView.y < y && (cellView.y + cellView.height) > y){
-          selectedX = i;
-          selectedY = j;
-          found = true
-          break;
+          cellView.y < y && (cellView.y + cellView.height) > y) {
+          return [i, j]
         }
       }
-
-      if (found) {
-        break;
-      }
     }
+
+    return [-1, -1];
+  }
+
+  onBattlePointerMove(msg: EventCellMoveMsg) {
+    const {view} = msg;
+    const [selectedX, selectedY] = this.getBattlePosition(view);
 
     if (this.selectedX == selectedX && this.selectedY == selectedY) {
       return;
@@ -239,5 +241,12 @@ export class BoardView extends View {
         this.battleCellViews[i][j].setSelected(i == selectedX && j == selectedY);
       }
     }
+  }
+
+  onBattlePointerOut(msg: EventCellMoveMsg) {
+    this.onBattlePointerMove(msg);
+
+    const {view} = msg;
+    event.emit(EVENT_UPDATE_BATTLE, new EventUpdateBattleMsg(view, this.selectedX, this.selectedY));
   }
 }

@@ -4,10 +4,12 @@ import {View} from '../../framework/view';
 import {CellView} from './cell-view';
 import {Size} from '../../framework/size';
 import {BoardView} from './board-view';
+import {RoomView} from './dialog/room-view';
 
 export class GameView extends View {
   private background: PIXI.Sprite;
-  private boardView: BoardView
+  private boardView: BoardView;
+  private roomView: RoomView;
 
   constructor() {
     super();
@@ -37,5 +39,10 @@ export class GameView extends View {
     this.boardView = new BoardView();
     this.boardView.init();
     this.addChild(this.boardView);
+
+    this.roomView = new RoomView();
+    this.roomView.size = new Size(this.width, this.height);
+    this.roomView.init();
+    this.addChild(this.roomView);
   }
 }

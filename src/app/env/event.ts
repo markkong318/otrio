@@ -1,0 +1,4 @@
+export const EVENT_UPDATE_BATTLE = 'EVENT_UPDATE_BATTLE';
+
+export const EVENT_CELL_MOVE = 'EVENT_CELL_MOVE';
+export const EVENT_CELL_OUT = 'EVENT_CELL_OUT';

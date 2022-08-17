@@ -16,7 +16,8 @@
     "@pixi/math": "^6.0.0",
     "fontfaceobserver": "^2.3.0",
     "gsap": "^3.10.4",
-    "pixi.js": "^6.4.2"
+    "pixi.js": "^6.4.2",
+    "qrcode": "^1.5.1"
   },
   "devDependencies": {
     "@types/jest": "^28.1.5",

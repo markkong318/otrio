@@ -52,6 +52,6 @@ export class GameModel extends Model {
       }
     }
 
-    this.battle[0][1][0] = PLAYER_1_ID; // test
+    // this.battle[0][1][0] = PLAYER_1_ID; // test
   }
 }

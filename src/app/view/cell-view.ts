@@ -4,7 +4,9 @@ import {View} from '../../framework/view';
 import bottle from '../../framework/bottle';
 import {CircleTexture} from '../texture/circle-texture';
 import {CELL_LEVEL_1, CELL_LEVEL_2, CELL_LEVEL_3} from '../env/cell';
-import {BoardView} from './board-view';
+import event from '../../framework/event';
+import {EVENT_CELL_MOVE, EVENT_CELL_OUT} from '../env/event';
+import {EventCellMoveMsg, EventCellOutMsg} from '../env/msg';
 
 export class CellView extends View {
   private background: PIXI.Sprite;
@@ -14,6 +16,9 @@ export class CellView extends View {
 
   private isDragged: boolean = false;
   private dragPoint: PIXI.Point;
+
+  private initX: number;
+  private initY: number;
 
   constructor() {
     super();
@@ -37,31 +42,34 @@ export class CellView extends View {
 
     this.levelSprites = [];
 
-    this.levelSprites[CELL_LEVEL_1] = new PIXI.Sprite(circleTexture.LEVEL1);
+    this.levelSprites[CELL_LEVEL_1] = new PIXI.Sprite(circleTexture.LEVEL_1);
     this.levelSprites[CELL_LEVEL_1].x = this.width / 2;
     this.levelSprites[CELL_LEVEL_1].y = this.height / 2;
     this.levelSprites[CELL_LEVEL_1].anchor.x = 0.5;
     this.levelSprites[CELL_LEVEL_1].anchor.y = 0.5;
     this.addChild(this.levelSprites[CELL_LEVEL_1]);
 
-    this.levelSprites[CELL_LEVEL_2] = new PIXI.Sprite(circleTexture.LEVEL2);
+    this.levelSprites[CELL_LEVEL_2] = new PIXI.Sprite(circleTexture.LEVEL_2);
     this.levelSprites[CELL_LEVEL_2].x = this.width / 2;
     this.levelSprites[CELL_LEVEL_2].y = this.height / 2;
     this.levelSprites[CELL_LEVEL_2].anchor.x = 0.5;
     this.levelSprites[CELL_LEVEL_2].anchor.y = 0.5;
     this.addChild(this.levelSprites[CELL_LEVEL_2]);
 
-    this.levelSprites[CELL_LEVEL_3] = new PIXI.Sprite(circleTexture.LEVEL3);
+    this.levelSprites[CELL_LEVEL_3] = new PIXI.Sprite(circleTexture.LEVEL_3);
     this.levelSprites[CELL_LEVEL_3].x = this.width / 2;
     this.levelSprites[CELL_LEVEL_3].y = this.height / 2;
     this.levelSprites[CELL_LEVEL_3].anchor.x = 0.5;
     this.levelSprites[CELL_LEVEL_3].anchor.y = 0.5;
     this.addChild(this.levelSprites[CELL_LEVEL_3]);
+
+    this.initX = this.x;
+    this.initY = this.y;
   }
 
-  public setColor(level, color) {
+  setColor(level, color) {
     if (level < 0 || level >  this.levelSprites.length - 1) {
-      throw new Error('not a valid level:' + level);
+      throw new Error('Not a valid level:' + level);
     }
 
     this.levelSprites[level].visible = !!color;
@@ -71,11 +79,11 @@ export class CellView extends View {
     }
   }
 
-  public setSelected(flag) {
+  setSelected(flag) {
     this.selectedSprite.visible = !!flag;
   }
 
-  public setMovable() {
+  setMovable() {
     this.interactive = true;
     this.buttonMode = true;
 
@@ -84,12 +92,29 @@ export class CellView extends View {
     this.on('pointerup', this.onPointerOut)
   }
 
+  getLevel() {
+    if (this.levelSprites[CELL_LEVEL_1].visible) {
+      return CELL_LEVEL_1;
+    } else if (this.levelSprites[CELL_LEVEL_2].visible) {
+      return CELL_LEVEL_2;
+    } else if (this.levelSprites[CELL_LEVEL_3].visible) {
+      return CELL_LEVEL_3;
+    }
+
+    throw new Error('Not valid cell');
+  }
+
+  resetPosition() {
+    this.x = this.initX;
+    this.y = this.initY;
+  }
+
   onPointerDown(event: PIXI.InteractionEvent) {
     console.log('onPointerDown')
     const {
       data: {
         global,
-      }
+      },
     } = event;
 
     const point = this.toLocal(global);
@@ -98,27 +123,31 @@ export class CellView extends View {
     this.dragPoint = point;
   }
 
-  onPointerMove(event: PIXI.InteractionEvent) {
+  onPointerMove(evt: PIXI.InteractionEvent) {
     if (!this.isDragged) {
       return;
     }
+
+    console.log('onPointerMove');
 
     const {
       data: {
         global,
       }
-    } = event;
+    } = evt;
 
     const point = this.parent.toLocal(global);
 
     this.position.x = point.x - this.dragPoint.x;
     this.position.y = point.y - this.dragPoint.y;
 
-    (<BoardView>this.parent).onBattleViewOver(this);
+    event.emit(EVENT_CELL_MOVE, new EventCellMoveMsg(this));
   }
 
-  onPointerOut(event: PIXI.InteractionEvent) {
-    console.log('onPointerOut')
+  onPointerOut(evt: PIXI.InteractionEvent) {
+    console.log('onPointerOut');
     this.isDragged = false;
+
+    event.emit(EVENT_CELL_OUT, new EventCellOutMsg(this));
   }
 }
