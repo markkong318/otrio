@@ -1,8 +1,9 @@
 import {Model} from '../../framework/model';
 import bottle from '../../framework/bottle';
+import Peer from 'skyway-js';
 
-export class GameModel extends Model {
-  public roomId: number;
+export class ClientModel extends Model {
+  public player_uid: string;
 
   constructor() {
     super();

@@ -3,7 +3,7 @@ import {GameModel} from '../model/game-model';
 import bottle from '../../framework/bottle';
 import {BoardView} from '../view/board-view';
 import event from '../../framework/event';
-import {EVENT_UPDATE_BATTLE} from '../env/event';
+import {EVENT_START_BATTLE, EVENT_UPDATE_BATTLE} from '../env/event';
 import {EventUpdateBattleMsg} from '../env/msg';
 import {PLAYER_4_ID, PLAYER_NONE} from '../env/game';
 
@@ -20,15 +20,16 @@ export class GameController extends Controller {
     this.gameModel = bottle.getObject(GameModel);
     this.boardView = bottle.getObject(BoardView);
 
+    event.on(EVENT_START_BATTLE, () => this.onEventStartBattle());
     event.on(EVENT_UPDATE_BATTLE, (msg) => this.onEventUpdateBattle(msg));
   }
 
-  start() {
-    this.gameModel.reset();
-    this.boardView.renderPlayer1(this.gameModel.player1);
-    this.boardView.renderPlayer2(this.gameModel.player2);
-    this.boardView.renderPlayer3(this.gameModel.player3);
-    this.boardView.renderPlayer4(this.gameModel.player4);
+  onEventStartBattle() {
+    this.gameModel.reset(this.gameModel.count);
+    this.boardView.renderPlayer1(this.gameModel.players[(this.gameModel.playerIdx + 1) % 4]);
+    this.boardView.renderPlayer2(this.gameModel.players[(this.gameModel.playerIdx + 2) % 4]);
+    this.boardView.renderPlayer3(this.gameModel.players[(this.gameModel.playerIdx + 3) % 4]);
+    this.boardView.renderPlayer4(this.gameModel.players[this.gameModel.playerIdx]);
     this.boardView.renderBattle(this.gameModel.battle);
   }
 
@@ -47,7 +48,7 @@ export class GameController extends Controller {
       return;
     }
 
-    battle[x][y][level] = PLAYER_4_ID;
+    battle[x][y][level] = this.gameModel.playerIdx;
 
     view.resetPosition();
     view.visible = false;

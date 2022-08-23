@@ -25,3 +25,10 @@ export class EventCellOutMsg {
     this.view = view;
   }
 }
+
+export class EventClientStartMsg {
+  public roomId: string;
+  constructor(roomId: string) {
+    this.roomId = roomId;
+  }
+}

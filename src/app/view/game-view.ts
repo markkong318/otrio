@@ -43,6 +43,8 @@ export class GameView extends View {
     this.roomView = new RoomView();
     this.roomView.size = new Size(this.width, this.height);
     this.roomView.init();
+    this.roomView.visible = false;
     this.addChild(this.roomView);
+
   }
 }

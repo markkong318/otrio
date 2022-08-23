@@ -3,6 +3,7 @@ import QRCode from 'qrcode';
 
 import {View} from '../../../framework/view';
 import bottle from '../../../framework/bottle';
+import {ServerController} from '../../controller/server-controller';
 
 export class RoomView extends View {
   private background: PIXI.Sprite;

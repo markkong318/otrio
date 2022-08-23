@@ -6,10 +6,20 @@ import {Size} from '../framework/size';
 import {Storage} from './storage/storage';
 import bottle from '../framework/bottle';
 import {CircleTexture} from './texture/circle-texture';
+import {ServerModel} from './model/server-model';
+import {ClientModel} from './model/client-model';
+import {ServerController} from './controller/server-controller';
+import {ClientController} from './controller/client-controller';
+import event from '../framework/event';
+import {EVENT_SERVER_START} from './env/event';
 
 export class GameApplication extends Application {
   private gameModel: GameModel;
+  private serverModel: ServerModel;
+  private clientModel: ClientModel;
   private gameController: GameController;
+  private serverController: ServerController;
+  private clientController: ClientController;
   private gameView: GameView;
   private storage: Storage;
   private circleTexture: CircleTexture;
@@ -34,8 +44,8 @@ export class GameApplication extends Application {
     bottle.setObject(this.renderer);
 
     this.gameModel = new GameModel();
-
-
+    this.serverModel = new ServerModel();
+    this.clientModel = new ClientModel();
 
     this.storage = new Storage();
     this.storage.init();
@@ -56,7 +66,14 @@ export class GameApplication extends Application {
 
     this.gameController = new GameController();
     this.gameController.init();
-    this.gameController.start();
+
+    this.serverController = new ServerController();
+    this.serverController.init();
+
+    this.clientController = new ClientController();
+    this.clientController.init();
+
+    event.emit(EVENT_SERVER_START);
   }
 
   public getViewHeight(viewWidth) {
