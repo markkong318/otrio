@@ -14,14 +14,14 @@ export class GameModel extends Model {
     bottle.setObject(this);
   }
 
-  reset(count: number) {
+  reset() {
     this.players = [];
     for (let i = 0; i < 4; i++) {
       this.players[i] = [];
       for (let j = 0; j < 3; j++) {
         this.players[i][j] = [];
         for (let k = 0; k < 3; k++) {
-          this.players[i][j][k] = i < count ? PLAYER_IDS[i] : PLAYER_NONE;
+          this.players[i][j][k] = i < this.count ? PLAYER_IDS[i] : PLAYER_NONE;
         }
       }
     }

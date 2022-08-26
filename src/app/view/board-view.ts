@@ -5,7 +5,7 @@ import {Size} from '../../framework/size';
 import {
   CELL_COLOR_EMPTY,
   CELL_COLOR_NONE,
-  CELL_COLOR_PLAYER_1, CELL_COLOR_PLAYER_2, CELL_COLOR_PLAYER_3, CELL_COLOR_PLAYER_4,
+  CELL_COLOR_PLAYER_1, CELL_COLOR_PLAYER_2, CELL_COLOR_PLAYER_3, CELL_COLOR_PLAYER_4, CELL_COLOR_PLAYERS,
   CELL_LEVEL_1,
   CELL_LEVEL_2,
   CELL_LEVEL_3
@@ -125,40 +125,40 @@ export class BoardView extends View {
     }
   }
 
-  renderPlayer1(cells) {
+  renderPlayerLeft(cells: number[][], color: number) {
     for (let i = 0; i < cells.length; i++) {
       const cell = cells[i]
       const view = this.player1CellViews[i];
 
-      cell[CELL_LEVEL_1] ? view.setColor(CELL_LEVEL_1, CELL_COLOR_PLAYER_1) : view.setColor(CELL_LEVEL_1, CELL_COLOR_NONE);
-      cell[CELL_LEVEL_2] ? view.setColor(CELL_LEVEL_2, CELL_COLOR_PLAYER_1) : view.setColor(CELL_LEVEL_2, CELL_COLOR_NONE);
-      cell[CELL_LEVEL_3] ? view.setColor(CELL_LEVEL_3, CELL_COLOR_PLAYER_1) : view.setColor(CELL_LEVEL_3, CELL_COLOR_NONE);
+      cell[CELL_LEVEL_1] ? view.setColor(CELL_LEVEL_1, color) : view.setColor(CELL_LEVEL_1, CELL_COLOR_NONE);
+      cell[CELL_LEVEL_2] ? view.setColor(CELL_LEVEL_2, color) : view.setColor(CELL_LEVEL_2, CELL_COLOR_NONE);
+      cell[CELL_LEVEL_3] ? view.setColor(CELL_LEVEL_3, color) : view.setColor(CELL_LEVEL_3, CELL_COLOR_NONE);
     }
   }
 
-  renderPlayer2(cells) {
+  renderPlayerUp(cells: number[][], color: number) {
     for (let i = 0; i < cells.length; i++) {
       const cell = cells[i]
       const view = this.player2CellViews[i];
 
-      cell[CELL_LEVEL_1] ? view.setColor(CELL_LEVEL_1, CELL_COLOR_PLAYER_2) : view.setColor(CELL_LEVEL_1, CELL_COLOR_NONE);
-      cell[CELL_LEVEL_2] ? view.setColor(CELL_LEVEL_2, CELL_COLOR_PLAYER_2) : view.setColor(CELL_LEVEL_2, CELL_COLOR_NONE);
-      cell[CELL_LEVEL_3] ? view.setColor(CELL_LEVEL_3, CELL_COLOR_PLAYER_2) : view.setColor(CELL_LEVEL_3, CELL_COLOR_NONE);
+      cell[CELL_LEVEL_1] ? view.setColor(CELL_LEVEL_1, color) : view.setColor(CELL_LEVEL_1, CELL_COLOR_NONE);
+      cell[CELL_LEVEL_2] ? view.setColor(CELL_LEVEL_2, color) : view.setColor(CELL_LEVEL_2, CELL_COLOR_NONE);
+      cell[CELL_LEVEL_3] ? view.setColor(CELL_LEVEL_3, color) : view.setColor(CELL_LEVEL_3, CELL_COLOR_NONE);
     }
   }
 
-  renderPlayer3(cells) {
+  renderPlayerRight(cells: number[][], color: number) {
     for (let i = 0; i < cells.length; i++) {
       const cell = cells[i]
       const view = this.player3CellViews[i];
 
-      cell[CELL_LEVEL_1] ? view.setColor(CELL_LEVEL_1, CELL_COLOR_PLAYER_3) : view.setColor(CELL_LEVEL_1, CELL_COLOR_NONE);
-      cell[CELL_LEVEL_2] ? view.setColor(CELL_LEVEL_2, CELL_COLOR_PLAYER_3) : view.setColor(CELL_LEVEL_2, CELL_COLOR_NONE);
-      cell[CELL_LEVEL_3] ? view.setColor(CELL_LEVEL_3, CELL_COLOR_PLAYER_3) : view.setColor(CELL_LEVEL_3, CELL_COLOR_NONE);
+      cell[CELL_LEVEL_1] ? view.setColor(CELL_LEVEL_1, color) : view.setColor(CELL_LEVEL_1, CELL_COLOR_NONE);
+      cell[CELL_LEVEL_2] ? view.setColor(CELL_LEVEL_2, color) : view.setColor(CELL_LEVEL_2, CELL_COLOR_NONE);
+      cell[CELL_LEVEL_3] ? view.setColor(CELL_LEVEL_3, color) : view.setColor(CELL_LEVEL_3, CELL_COLOR_NONE);
     }
   }
 
-  renderPlayer4(cells) {
+  renderPlayerDown(cells: number[][], color: number) {
     for (let i = 0; i < this.player4CellViews.length; i++) {
       for (let j = 0; j < this.player4CellViews[i].length; j++) {
         this.player4CellViews[i][j].setColor(CELL_LEVEL_1, CELL_COLOR_NONE);
@@ -171,13 +171,15 @@ export class BoardView extends View {
       const cell = cells[i]
       const view = this.player4CellViews[i];
 
-      cell[CELL_LEVEL_1] ? view[0].setColor(CELL_LEVEL_1, CELL_COLOR_PLAYER_4) : view[0].setColor(CELL_LEVEL_1, CELL_COLOR_NONE);
-      cell[CELL_LEVEL_2] ? view[1].setColor(CELL_LEVEL_2, CELL_COLOR_PLAYER_4) : view[1].setColor(CELL_LEVEL_2, CELL_COLOR_NONE);
-      cell[CELL_LEVEL_3] ? view[2].setColor(CELL_LEVEL_3, CELL_COLOR_PLAYER_4) : view[2].setColor(CELL_LEVEL_3, CELL_COLOR_NONE);
+      cell[CELL_LEVEL_1] ? view[0].setColor(CELL_LEVEL_1, color) : view[0].setColor(CELL_LEVEL_1, CELL_COLOR_NONE);
+      cell[CELL_LEVEL_2] ? view[1].setColor(CELL_LEVEL_2, color) : view[1].setColor(CELL_LEVEL_2, CELL_COLOR_NONE);
+      cell[CELL_LEVEL_3] ? view[2].setColor(CELL_LEVEL_3, color) : view[2].setColor(CELL_LEVEL_3, CELL_COLOR_NONE);
     }
   }
 
   renderBattle(cells) {
+    console.log('battle:')
+    console.log(cells);
     for (let i = 0; i < this.battleCellViews.length; i++) {
       for (let j = 0; j < this.battleCellViews[i].length; j++) {
         this.battleCellViews[i][j].setColor(CELL_LEVEL_1, CELL_COLOR_EMPTY);
@@ -201,6 +203,9 @@ export class BoardView extends View {
               break;
             case cells[i][j][k] === PLAYER_4_ID:
               this.battleCellViews[i][j].setColor(k, CELL_COLOR_PLAYER_4);
+              break;
+            case cells[i][j][k] === PLAYER_NONE:
+              this.battleCellViews[i][j].setColor(k, CELL_COLOR_EMPTY);
               break;
           }
         }

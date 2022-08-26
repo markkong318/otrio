@@ -8,9 +8,12 @@ import {API_KEY} from '../env/server';
 import event from '../../framework/event';
 import {EVENT_CLIENT_START, EVENT_SERVER_START} from '../env/event';
 import {EventClientStartMsg} from '../env/msg';
+import {ServerGameController} from './server-game-controller';
+import {PLAYER_IDS, PLAYER_NONE} from '../env/game';
 
 export class ServerController extends Controller {
-  private serverModel: ServerModel;
+  private get serverModel(): ServerModel {return bottle.getObject(ServerModel);}
+  private get serverGameController() : ServerGameController {return bottle.getObject(ServerGameController);}
 
   private peer: Peer;
   private room: MeshRoom;
@@ -21,8 +24,6 @@ export class ServerController extends Controller {
   }
 
   init() {
-    this.serverModel = bottle.getObject(ServerModel);
-
     event.on(EVENT_SERVER_START, () => this.startServer());
   }
 
@@ -50,9 +51,9 @@ export class ServerController extends Controller {
       });
 
       this.room.on("open", () => this.onRoomOpen());
-      this.room.on('peerJoin', peerId => this.onRoomJoin(peerId));
-      this.room.on('peerLeave', peerId => this.onRoomLeave(peerId));
-      this.room.on('data', ({data, src}) => this.onRoomReceive({data, src}));
+      this.room.on('peerJoin', peerId => this.onRoomPeerJoin(peerId));
+      this.room.on('peerLeave', peerId => this.onRoomPeerLeave(peerId));
+      this.room.on('data', ({data, src}) => this.onRoomData({data, src}));
     });
   }
 
@@ -61,7 +62,7 @@ export class ServerController extends Controller {
     event.emit(EVENT_CLIENT_START, new EventClientStartMsg(this.room.name));
   }
 
-  onRoomJoin(peerId) {
+  onRoomPeerJoin(peerId) {
     console.log(`[server] peer ${peerId} is joined`);
     this.serverModel.peerIds.push(peerId);
     this.serverModel.count++;
@@ -69,7 +70,7 @@ export class ServerController extends Controller {
     this.sendStart();
   }
 
-  onRoomLeave(peerId) {
+  onRoomPeerLeave(peerId) {
     const index = this.serverModel.peerIds.indexOf(peerId);
     if (index <= -1) {
       return;
@@ -79,44 +80,69 @@ export class ServerController extends Controller {
     this.serverModel.count--;
   }
 
-  onRoomReceive({data, src}) {
+  onRoomData({data, src}) {
     console.log(`[server] ${src}$ said ${JSON.stringify(data)}`);
 
     const {cmd} = data;
     switch (cmd) {
-      case 'start':
-        this.onReceiveStart({data, src});
-        break;
-      case 'reset':
-        this.onReceiveReset({data, src});
-        break;
       case 'put':
         this.onReceivePut({data, src});
+        break;
     }
-  }
-
-  onReceiveStart({data, src}) {
-    if (src !== this.peer.id) {
-      return;
-    }
-  }
-
-  onReceiveReset({data, src}) {
-    this.serverModel.reset();
   }
 
   onReceivePut({data, src}) {
+    const {
+      from: {
+        x: fromX,
+        level: fromLevel,
+      },
+      to: {
+        x: toX,
+        y: toY,
+        level: toLevel,
+      }
+    } = data;
 
+    const idx = this.serverModel.peerIds.indexOf(src);
+    const playerId = PLAYER_IDS[idx];
+
+    if (this.serverModel.players[idx][fromX][fromLevel] !== playerId) {
+      throw new Error('Not a valid source coordinate');
+    }
+
+    if (this.serverModel.battle[toX][toY][toLevel] !== PLAYER_NONE) {
+      throw new Error('Not a valid target coordinate');
+    }
+
+    this.serverModel.players[idx][fromX][fromLevel] = PLAYER_NONE;
+    this.serverModel.battle[toX][toY][toLevel] = playerId;
+
+    const positions = this.serverGameController.checkFinish();
+
+    // this.room.send({
+    //   cmd: 'allow-put',
+    //   playerId: src,
+    //   from: {
+    //     x: fromX,
+    //     level: fromLevel,
+    //   },
+    //   to: {
+    //     x: toX,
+    //     y: toY,
+    //     level: toLevel,
+    //   },
+    //   nextPlayerId: '',
+    // });
   }
 
   sendStart() {
+    this.serverGameController.reset();
+
     this.room.send({
       cmd: 'start',
       players: this.serverModel.peerIds,
     });
-
-    this.room.send("hello");
-    this.room.send({a:1});
   }
 
   sendUpdate() {
