@@ -5,7 +5,7 @@ import {BoardView} from '../view/board-view';
 import event from '../../framework/event';
 import {EVENT_START_BATTLE, EVENT_UPDATE_BATTLE} from '../env/event';
 import {EventUpdateBattleMsg} from '../env/msg';
-import {PLAYER_4_ID, PLAYER_IDS, PLAYER_NONE} from '../env/game';
+import {PLAYER_IDS, PLAYER_NONE} from '../env/game';
 import {CELL_COLOR_PLAYERS} from '../env/cell';
 
 export class GameController extends Controller {
@@ -27,11 +27,11 @@ export class GameController extends Controller {
 
   onEventStartBattle() {
     this.gameModel.reset();
-    this.boardView.renderPlayerLeft(this.gameModel.players[(this.gameModel.playerIdx + 1) % 4], CELL_COLOR_PLAYERS[(this.gameModel.playerIdx + 1) % 4]);
-    this.boardView.renderPlayerUp(this.gameModel.players[(this.gameModel.playerIdx + 2) % 4], CELL_COLOR_PLAYERS[(this.gameModel.playerIdx + 2) % 4]);
-    this.boardView.renderPlayerRight(this.gameModel.players[(this.gameModel.playerIdx + 3) % 4], CELL_COLOR_PLAYERS[(this.gameModel.playerIdx + 3) % 4]);
-    this.boardView.renderPlayerDown(this.gameModel.players[this.gameModel.playerIdx], CELL_COLOR_PLAYERS[this.gameModel.playerIdx]);
-    this.boardView.renderBattle(this.gameModel.battle);
+    this.boardView.renderPlayerLeft(this.gameModel.playerCells[(this.gameModel.playerIdx + 1) % 4], CELL_COLOR_PLAYERS[(this.gameModel.playerIdx + 1) % 4]);
+    this.boardView.renderPlayerUp(this.gameModel.playerCells[(this.gameModel.playerIdx + 2) % 4], CELL_COLOR_PLAYERS[(this.gameModel.playerIdx + 2) % 4]);
+    this.boardView.renderPlayerRight(this.gameModel.playerCells[(this.gameModel.playerIdx + 3) % 4], CELL_COLOR_PLAYERS[(this.gameModel.playerIdx + 3) % 4]);
+    this.boardView.renderPlayerDown(this.gameModel.playerCells[this.gameModel.playerIdx], CELL_COLOR_PLAYERS[this.gameModel.playerIdx]);
+    this.boardView.renderBattle(this.gameModel.battleCells);
   }
 
   onEventUpdateBattle(msg: EventUpdateBattleMsg) {
@@ -43,7 +43,7 @@ export class GameController extends Controller {
       return;
     }
 
-    const battle = this.gameModel.battle;
+    const battle = this.gameModel.battleCells;
     if (battle[x][y][level] != PLAYER_NONE) {
       view.resetPosition();
       return;

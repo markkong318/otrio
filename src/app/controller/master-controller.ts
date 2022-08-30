@@ -10,8 +10,8 @@ import {EVENT_CLIENT_START, EVENT_SERVER_START} from '../env/event';
 import {EventClientStartMsg} from '../env/msg';
 import {PLAYER_IDS, PLAYER_NONE} from '../env/game';
 
-export class ServerGameController extends Controller {
-  private get serverModel(): ServerModel {return bottle.getObject(ServerModel)}
+export class MasterController extends Controller {
+  private serverModel: ServerModel;
 
   constructor() {
     super();
@@ -19,34 +19,54 @@ export class ServerGameController extends Controller {
   }
 
   init() {
-    // this.serverModel = bottle.getObject(ServerModel);
+
   }
 
+  put(peerId, fromX, fromLevel, toX, toY, toLevel) {
+    const idx = this.serverModel.peerIds.indexOf(peerId);
 
+    if (idx != this.serverModel.turn) {
+      throw new Error('Not a valid turn');
+    }
 
-  put() {
+    const playerId = PLAYER_IDS[idx];
 
+    if (this.serverModel.playerCells[idx][fromX][fromLevel] !== playerId) {
+      throw new Error('Not a valid source coordinate');
+    }
+
+    if (this.serverModel.battleCells[toX][toY][toLevel] !== PLAYER_NONE) {
+      throw new Error('Not a valid target coordinate');
+    }
+
+    this.serverModel.playerCells[idx][fromX][fromLevel] = PLAYER_NONE;
+    this.serverModel.battleCells[toX][toY][toLevel] = playerId;
+  }
+
+  nextTurn() {
+    this.serverModel.turn = (this.serverModel.turn + 1) % this.serverModel.peerIds.length;
+    return this.serverModel.turn;
   }
 
   reset() {
-    this.serverModel.players = [];
+    this.serverModel.playerCells = [];
     for (let i = 0; i < 4; i++) {
-      this.serverModel.players[i] = [];
+      this.serverModel.playerCells[i] = [];
       for (let j = 0; j < 3; j++) {
-        this.serverModel.players[i][j] = [];
+        this.serverModel.playerCells[i][j] = [];
         for (let k = 0; k < 3; k++) {
-          this.serverModel.players[i][j][k] = i < this.serverModel.count ? PLAYER_IDS[i] : PLAYER_NONE;
+          this.serverModel.playerCells[i][j][k] = i < this.serverModel.count ? PLAYER_IDS[i] : PLAYER_NONE;
         }
       }
     }
 
-    this.serverModel.battle = [];
+    this.serverModel.battleCells = [];
     for (let i = 0; i < 3; i++) {
-      this.serverModel.battle[i] = [];
+      this.serverModel.battleCells[i] = [];
       for (let j = 0; j < 3; j++) {
-        this.serverModel.battle[i][j] = [];
+        this.serverModel.battleCells[i][j] = [];
         for (let k = 0; k < 3; k++) {
-          this.serverModel.battle[i][j][k] = PLAYER_NONE;
+          this.serverModel.battleCells[i][j][k] = PLAYER_NONE;
         }
       }
     }
@@ -57,51 +77,51 @@ export class ServerGameController extends Controller {
 
     positions = this.checkFinishType1();
     if (positions.length) {
-      console.log('type 1');
+      console.log('match type 1');
       return positions;
     }
 
     positions = this.checkFinishType2();
     if (positions.length) {
-      console.log('type 2');
+      console.log('match type 2');
       return positions;
     }
 
     positions = this.checkFinishType3();
     if (positions.length) {
-      console.log('type 3');
+      console.log('match type 3');
       return positions;
     }
 
     positions = this.checkFinishType4();
     if (positions.length) {
-      console.log('type 4');
+      console.log('match type 4');
       return positions;
     }
 
     positions = this.checkFinishType5();
     if (positions.length) {
-      console.log('type 5');
+      console.log('match type 5');
       return positions;
     }
 
     positions = this.checkFinishType6();
     if (positions.length) {
-      console.log('type 6');
+      console.log('match type 6');
       return positions;
     }
 
     positions = this.checkFinishType7();
     if (positions.length) {
-      console.log('type 7');
+      console.log('match type 7');
       return positions;
     }
 
-    return null;
+    return [];
   }
 
   checkFinishType1() {
-    const battle = this.serverModel.battle;
+    const battle = this.serverModel.battleCells;
     const positions = [];
 
     let found = false;
@@ -127,7 +147,7 @@ export class ServerGameController extends Controller {
   }
 
   checkFinishType2() {
-    const battle = this.serverModel.battle;
+    const battle = this.serverModel.battleCells;
     const positions = [];
 
     let found = false;
@@ -155,7 +175,7 @@ export class ServerGameController extends Controller {
   }
 
   checkFinishType3() {
-    const battle = this.serverModel.battle;
+    const battle = this.serverModel.battleCells;
     const positions = [];
 
     let found = false;
@@ -182,7 +202,7 @@ export class ServerGameController extends Controller {
   }
 
   checkFinishType4() {
-    const battle = this.serverModel.battle;
+    const battle = this.serverModel.battleCells;
     const positions = [];
 
     let found = false;
@@ -218,7 +238,7 @@ export class ServerGameController extends Controller {
   }
 
   checkFinishType5() {
-    const battle = this.serverModel.battle;
+    const battle = this.serverModel.battleCells;
     const positions = [];
 
     let found = false;
@@ -254,7 +274,7 @@ export class ServerGameController extends Controller {
   }
 
   checkFinishType6() {
-    const battle = this.serverModel.battle;
+    const battle = this.serverModel.battleCells;
     const positions = [];
 
     let found = false;
@@ -285,7 +305,7 @@ export class ServerGameController extends Controller {
   }
 
   checkFinishType7() {
-    const battle = this.serverModel.battle;
+    const battle = this.serverModel.battleCells;
     const positions = [];
 
     let found = false;

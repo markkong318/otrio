@@ -12,7 +12,7 @@ import {ServerController} from './controller/server-controller';
 import {ClientController} from './controller/client-controller';
 import event from '../framework/event';
 import {EVENT_SERVER_START} from './env/event';
-import {ServerGameController} from './controller/server-game-controller';
+import {MasterController} from './controller/master-controller';
 
 export class GameApplication extends Application {
   private gameModel: GameModel;
@@ -20,7 +20,7 @@ export class GameApplication extends Application {
   private clientModel: ClientModel;
   private gameController: GameController;
   private serverController: ServerController;
-  private serverGameController: ServerGameController;
+  private serverGameController: MasterController;
   private clientController: ClientController;
   private gameView: GameView;
   private storage: Storage;
@@ -72,7 +72,7 @@ export class GameApplication extends Application {
     this.serverController = new ServerController();
     this.serverController.init();
 
-    this.serverGameController = new ServerGameController();
+    this.serverGameController = new MasterController();
     this.serverGameController.init();
 
     this.clientController = new ClientController();

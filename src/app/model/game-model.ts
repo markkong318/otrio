@@ -3,8 +3,8 @@ import bottle from '../../framework/bottle';
 import {PLAYER_IDS, PLAYER_NONE} from '../env/game';
 
 export class GameModel extends Model {
-  public players: number[][][];
-  public battle: number[][][];
+  public playerCells: number[][][];
+  public battleCells: number[][][];
 
   public playerIdx: number = 0;
   public count: number = 0;
@@ -15,28 +15,26 @@ export class GameModel extends Model {
   }
 
   reset() {
-    this.players = [];
+    this.playerCells = [];
     for (let i = 0; i < 4; i++) {
-      this.players[i] = [];
+      this.playerCells[i] = [];
       for (let j = 0; j < 3; j++) {
-        this.players[i][j] = [];
+        this.playerCells[i][j] = [];
         for (let k = 0; k < 3; k++) {
-          this.players[i][j][k] = i < this.count ? PLAYER_IDS[i] : PLAYER_NONE;
+          this.playerCells[i][j][k] = i < this.count ? PLAYER_IDS[i] : PLAYER_NONE;
         }
       }
     }
 
-    this.battle = [];
+    this.battleCells = [];
     for (let i = 0; i < 3; i++) {
-      this.battle[i] = [];
+      this.battleCells[i] = [];
       for (let j = 0; j < 3; j++) {
-        this.battle[i][j] = [];
+        this.battleCells[i][j] = [];
         for (let k = 0; k < 3; k++) {
-          this.battle[i][j][k] = PLAYER_NONE;
+          this.battleCells[i][j][k] = PLAYER_NONE;
         }
       }
     }
-
-    // this.battle[0][1][0] = PLAYER_1_ID; // test
   }
 }

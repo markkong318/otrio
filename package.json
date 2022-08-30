@@ -16,6 +16,7 @@
     "@pixi/math": "^6.0.0",
     "fontfaceobserver": "^2.3.0",
     "gsap": "^3.10.4",
+    "lodash": "^4.17.21",
     "pixi.js": "^6.4.2",
     "qrcode": "^1.5.1",
     "skyway-js": "^4.4.5"

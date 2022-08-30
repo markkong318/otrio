@@ -32,5 +32,4 @@ export default new class Bottle {
   get(key) {
     return this.map.get(key);
   }
-
 }()

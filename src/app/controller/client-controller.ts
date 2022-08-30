@@ -1,6 +1,5 @@
 import {Controller} from '../../framework/controller';
 import bottle from '../../framework/bottle';
-import {ClientModel} from '../model/client-model';
 import Peer, {MeshRoom} from 'skyway-js';
 import {API_KEY} from '../env/server';
 import event from '../../framework/event';
@@ -9,7 +8,6 @@ import {EventClientStartMsg} from '../env/msg';
 import {GameModel} from '../model/game-model';
 
 export class ClientController extends Controller {
-  private clientModel: ClientModel;
   private gameModel: GameModel;
   private peer: Peer;
   private room: MeshRoom;
@@ -20,9 +18,6 @@ export class ClientController extends Controller {
   }
 
   init() {
-    this.clientModel = bottle.getObject(ClientModel);
-    this.gameModel = bottle.getObject(GameModel);
-
     event.on(EVENT_CLIENT_START, (msg) => this.startClient(msg));
   }
 
@@ -66,11 +61,6 @@ export class ClientController extends Controller {
       case 'put-allow':
         this.onReceivePutAllow({data, src});
         break;
-      // case 'reset':
-      //   this.onReceiveReset({data, src});
-      //   break;
-      // case 'put':
-      //   this.onReceivePut({data, src});
     }
   }
 
