@@ -1,27 +1,27 @@
 import {GameView} from './view/game-view';
-import {GameModel} from './model/game-model';
-import {GameController} from './controller/game-controller';
+import {PeerModel} from './model/peer-model';
+import {BoardController} from './controller/board-controller';
 import {Application} from '../framework/application';
 import {Size} from '../framework/size';
 import {Storage} from './storage/storage';
 import bottle from '../framework/bottle';
 import {CircleTexture} from './texture/circle-texture';
-import {ServerModel} from './model/server-model';
-import {ClientModel} from './model/client-model';
-import {ServerController} from './controller/server-controller';
-import {ClientController} from './controller/client-controller';
+import {RoomModel} from './model/room-model';
+import {RoomController} from './controller/room-controller';
+import {PeerController} from './controller/peer-controller';
 import event from '../framework/event';
 import {EVENT_SERVER_START} from './env/event';
-import {MasterController} from './controller/master-controller';
+import {RoomGameController} from './controller/room-game-controller';
+import {PeerGameController} from './controller/peer-game-controller';
 
 export class GameApplication extends Application {
-  private gameModel: GameModel;
-  private serverModel: ServerModel;
-  private clientModel: ClientModel;
-  private gameController: GameController;
-  private serverController: ServerController;
-  private serverGameController: MasterController;
-  private clientController: ClientController;
+  private peerModel: PeerModel;
+  private roomModel: RoomModel;
+  private boardController: BoardController;
+  private roomController: RoomController;
+  private roomGameController: RoomGameController;
+  private peerController: PeerController;
+  private peerGameController: PeerGameController;
   private gameView: GameView;
   private storage: Storage;
   private circleTexture: CircleTexture;
@@ -45,9 +45,9 @@ export class GameApplication extends Application {
   public initScene(): void {
     bottle.setObject(this.renderer);
 
-    this.gameModel = new GameModel();
-    this.serverModel = new ServerModel();
-    this.clientModel = new ClientModel();
+    this.peerModel = new PeerModel();
+    this.roomModel = new RoomModel();
+    this.clientModel = new PeerModel();
 
     this.storage = new Storage();
     this.storage.init();
@@ -66,17 +66,20 @@ export class GameApplication extends Application {
 
     this.resizeView();
 
-    this.gameController = new GameController();
-    this.gameController.init();
+    this.boardController = new BoardController();
+    this.boardController.init();
 
-    this.serverController = new ServerController();
-    this.serverController.init();
+    this.roomController = new RoomController();
+    this.roomController.init();
 
-    this.serverGameController = new MasterController();
-    this.serverGameController.init();
+    this.roomGameController = new RoomGameController();
+    this.roomGameController.init();
 
-    this.clientController = new ClientController();
-    this.clientController.init();
+    this.peerController = new PeerController();
+    this.peerController.init();
+
+    this.peerGameController = new PeerGameController();
+    this.peerGameController.init();
 
     event.emit(EVENT_SERVER_START);
   }

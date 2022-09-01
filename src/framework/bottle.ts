@@ -10,7 +10,7 @@ export default new class Bottle {
       throw new Error('Argument is not a object');
     }
 
-    console.log('set object ' + obj.constructor.name)
+    console.log('[bottle] set object ' + obj.constructor.name)
 
     this.map.set(obj.constructor.name, obj)
   }
@@ -20,7 +20,7 @@ export default new class Bottle {
       throw new Error('Argument is not a class');
     }
 
-    console.log('get object ' + obj.name)
+    console.log('[bottle] get object ' + obj.name)
 
     return this.map.get(obj.name);
   }

@@ -33,10 +33,10 @@ export class BoardView extends View {
 
   public init() {
     this.initBattle();
-    this.initPlayer1();
-    this.initPlayer2();
-    this.initPlayer3();
-    this.initPlayer4();
+    this.initPlayerLeft();
+    this.initPlayerUp();
+    this.initPlayerRight();
+    this.initPlayerDown();
 
     event.on(EVENT_CELL_MOVE, (msg) => this.onBattlePointerMove(msg));
     event.on(EVENT_CELL_OUT, (msg) => this.onBattlePointerOut(msg));
@@ -60,7 +60,7 @@ export class BoardView extends View {
     }
   }
 
-  initPlayer1() {
+  initPlayerLeft() {
     this.player1CellViews = [];
     for (let i = 0; i < 3; i++) {
       const cell = new CellView();
@@ -75,7 +75,7 @@ export class BoardView extends View {
     }
   }
 
-  initPlayer2() {
+  initPlayerUp() {
     this.player2CellViews = [];
     for (let i = 0; i < 3; i++) {
       const cell = new CellView();
@@ -90,7 +90,7 @@ export class BoardView extends View {
     }
   }
 
-  initPlayer3() {
+  initPlayerRight() {
     this.player3CellViews = [];
     for (let i = 0; i < 3; i++) {
       const cell = new CellView();
@@ -105,7 +105,7 @@ export class BoardView extends View {
     }
   }
 
-  initPlayer4() {
+  initPlayerDown() {
     this.player4CellViews = []
     for (let i = 0; i < 3; i++) {
       this.player4CellViews[i] = []
@@ -116,7 +116,7 @@ export class BoardView extends View {
         cell.y = 96 * 4 + 96 * j;
         cell.init();
 
-        cell.setMovable();
+        cell.setMovable(true);
 
         this.addChild(cell);
 
@@ -211,6 +211,31 @@ export class BoardView extends View {
         }
       }
     }
+  }
+
+  drawPlayerLeft(x: number, level: number, color: number) {
+    const view = this.player1CellViews[x];
+    view.setColor(level, color);
+  }
+
+  drawPlayerUp(x: number, level: number, color: number) {
+    const view = this.player2CellViews[x];
+    view.setColor(level, color);
+  }
+
+  drawPlayerRight(x: number, level: number, color: number) {
+    const view = this.player3CellViews[x];
+    view.setColor(level, color);
+  }
+
+  drawPlayerDown(x: number, level: number, color: number) {
+    const view = this.player4CellViews[x][level];
+    view.setColor(level, color);
+  }
+
+  drawBattleCell(x: number, y: number, level: number, color: number) {
+    const view = this.battleCellViews[x][y];
+    view.setColor(level, color);
   }
 
   getBattlePosition(view: CellView) {

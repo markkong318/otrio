@@ -3,13 +3,18 @@ import bottle from './bottle';
 
 export class Controller {
   constructor() {
-    return new Proxy(this, {
+    const proxy = new Proxy(this, {
       get: function (oTarget, sKey) {
         if (String(sKey).endsWith('Model') || String(sKey).endsWith('Controller') || String(sKey).endsWith('View')) {
-          bottle.get(_.upperFirst(sKey));
+          return bottle.get(_.upperFirst(sKey));
         }
         return oTarget[sKey];
       },
     });
+
+    bottle.setObject(proxy);
+    return proxy;
   }
+
+  init() {}
 }

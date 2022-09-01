@@ -5,16 +5,19 @@ import {API_KEY} from '../env/server';
 import event from '../../framework/event';
 import {EVENT_CLIENT_START, EVENT_START_BATTLE} from '../env/event';
 import {EventClientStartMsg} from '../env/msg';
-import {GameModel} from '../model/game-model';
+import {PeerModel} from '../model/peer-model';
+import {PLAYER_IDS} from '../env/game';
+import {PeerGameController} from './peer-game-controller';
 
-export class ClientController extends Controller {
-  private gameModel: GameModel;
+export class PeerController extends Controller {
+  private peerModel: PeerModel;
+  private peerGameController: PeerGameController;
+
   private peer: Peer;
   private room: MeshRoom;
 
   constructor() {
     super();
-    bottle.setObject(this);
   }
 
   init() {
@@ -38,7 +41,7 @@ export class ClientController extends Controller {
       this.room = this.peer.joinRoom(roomId, {
         mode: 'mesh',
       });
-      //
+
       this.room.on("open", () => this.onRoomOpen());
       // this.room.on('peerJoin', peerId => this.onJoin(peerId));
       // this.room.on('peerLeave', peerId => this.onLeave(peerId));
@@ -65,25 +68,41 @@ export class ClientController extends Controller {
   }
 
   onReceiveStart({data, src}) {
-    const {players} = data;
+    const {peerIds} = data;
 
-    const playerIdx = players.indexOf(this.peer.id);
-    if (playerIdx <= -1) {
+    const idx = peerIds.indexOf(this.peer.id);
+    if (idx <= -1) {
       throw new Error('invalid client player id');
     }
 
-    console.log(`player idx: ${playerIdx}`);
-    console.log(`count: ${players.length}`);
+    console.log(`idx: ${idx}`);
+    console.log(`count: ${peerIds.length}`);
 
-    this.gameModel.playerIdx = playerIdx;
-    this.gameModel.count = players.length;
+    this.peerModel.idx = idx;
+    this.peerModel.playerId = PLAYER_IDS[idx];
+    this.peerModel.peerIds = peerIds;
+    this.peerModel.count = peerIds.length;
 
-    this.gameModel.reset();
+    this.peerGameController.reset();
 
     event.emit(EVENT_START_BATTLE);
   }
 
   onReceivePutAllow({data, src}) {
-
+    const {
+      cmd,
+      peerId,
+      from: {
+        x: fromX,
+        level: fromLevel,
+      },
+      to: {
+        x: toX,
+        y: toY,
+        level: toLevel,
+      },
+      turn,
+      positions,
+    } = data;
   }
 }

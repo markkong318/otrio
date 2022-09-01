@@ -22,6 +22,9 @@ export class CellView extends View {
 
   constructor() {
     super();
+    this.on('pointerdown', this.onPointerDown)
+    this.on('pointermove', this.onPointerMove);
+    this.on('pointerup', this.onPointerOut)
   }
 
   public init() {
@@ -67,7 +70,7 @@ export class CellView extends View {
     this.initY = this.y;
   }
 
-  setColor(level, color) {
+  setColor(level: number, color: number) {
     if (level < 0 || level >  this.levelSprites.length - 1) {
       throw new Error('Not a valid level:' + level);
     }
@@ -79,17 +82,13 @@ export class CellView extends View {
     }
   }
 
-  setSelected(flag) {
+  setSelected(flag: boolean) {
     this.selectedSprite.visible = !!flag;
   }
 
-  setMovable() {
-    this.interactive = true;
-    this.buttonMode = true;
-
-    this.on('pointerdown', this.onPointerDown)
-    this.on('pointermove', this.onPointerMove);
-    this.on('pointerup', this.onPointerOut)
+  setMovable(flag: boolean) {
+    this.interactive = !!flag;
+    this.buttonMode = !!flag;
   }
 
   getLevel() {

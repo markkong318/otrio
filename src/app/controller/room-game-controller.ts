@@ -3,70 +3,65 @@ import {v4 as uuidv4} from 'uuid';
 
 import {Controller} from '../../framework/controller';
 import bottle from '../../framework/bottle';
-import {ServerModel} from '../model/server-model';
+import {RoomModel} from '../model/room-model';
 import {API_KEY} from '../env/server';
 import event from '../../framework/event';
 import {EVENT_CLIENT_START, EVENT_SERVER_START} from '../env/event';
 import {EventClientStartMsg} from '../env/msg';
 import {PLAYER_IDS, PLAYER_NONE} from '../env/game';
 
-export class MasterController extends Controller {
-  private serverModel: ServerModel;
+export class RoomGameController extends Controller {
+  private roomModel: RoomModel;
 
   constructor() {
     super();
-    bottle.setObject(this);
-  }
-
-  init() {
-
   }
 
   put(peerId, fromX, fromLevel, toX, toY, toLevel) {
-    const idx = this.serverModel.peerIds.indexOf(peerId);
+    const idx = this.roomModel.peerIds.indexOf(peerId);
 
-    if (idx != this.serverModel.turn) {
+    if (idx != this.roomModel.turn) {
       throw new Error('Not a valid turn');
     }
 
     const playerId = PLAYER_IDS[idx];
 
-    if (this.serverModel.playerCells[idx][fromX][fromLevel] !== playerId) {
+    if (this.roomModel.playerCells[idx][fromX][fromLevel] !== playerId) {
       throw new Error('Not a valid source coordinate');
     }
 
-    if (this.serverModel.battleCells[toX][toY][toLevel] !== PLAYER_NONE) {
+    if (this.roomModel.battleCells[toX][toY][toLevel] !== PLAYER_NONE) {
       throw new Error('Not a valid target coordinate');
     }
 
-    this.serverModel.playerCells[idx][fromX][fromLevel] = PLAYER_NONE;
-    this.serverModel.battleCells[toX][toY][toLevel] = playerId;
+    this.roomModel.playerCells[idx][fromX][fromLevel] = PLAYER_NONE;
+    this.roomModel.battleCells[toX][toY][toLevel] = playerId;
   }
 
   nextTurn() {
-    this.serverModel.turn = (this.serverModel.turn + 1) % this.serverModel.peerIds.length;
-    return this.serverModel.turn;
+    this.roomModel.turn = (this.roomModel.turn + 1) % this.roomModel.peerIds.length;
+    return this.roomModel.turn;
   }
 
   reset() {
-    this.serverModel.playerCells = [];
+    this.roomModel.playerCells = [];
     for (let i = 0; i < 4; i++) {
-      this.serverModel.playerCells[i] = [];
+      this.roomModel.playerCells[i] = [];
       for (let j = 0; j < 3; j++) {
-        this.serverModel.playerCells[i][j] = [];
+        this.roomModel.playerCells[i][j] = [];
         for (let k = 0; k < 3; k++) {
-          this.serverModel.playerCells[i][j][k] = i < this.serverModel.count ? PLAYER_IDS[i] : PLAYER_NONE;
+          this.roomModel.playerCells[i][j][k] = i < this.roomModel.count ? PLAYER_IDS[i] : PLAYER_NONE;
         }
       }
     }
 
-    this.serverModel.battleCells = [];
+    this.roomModel.battleCells = [];
     for (let i = 0; i < 3; i++) {
-      this.serverModel.battleCells[i] = [];
+      this.roomModel.battleCells[i] = [];
       for (let j = 0; j < 3; j++) {
-        this.serverModel.battleCells[i][j] = [];
+        this.roomModel.battleCells[i][j] = [];
         for (let k = 0; k < 3; k++) {
-          this.serverModel.battleCells[i][j][k] = PLAYER_NONE;
+          this.roomModel.battleCells[i][j][k] = PLAYER_NONE;
         }
       }
     }
@@ -121,7 +116,7 @@ export class MasterController extends Controller {
   }
 
   checkFinishType1() {
-    const battle = this.serverModel.battleCells;
+    const battle = this.roomModel.battleCells;
     const positions = [];
 
     let found = false;
@@ -147,7 +142,7 @@ export class MasterController extends Controller {
   }
 
   checkFinishType2() {
-    const battle = this.serverModel.battleCells;
+    const battle = this.roomModel.battleCells;
     const positions = [];
 
     let found = false;
@@ -175,7 +170,7 @@ export class MasterController extends Controller {
   }
 
   checkFinishType3() {
-    const battle = this.serverModel.battleCells;
+    const battle = this.roomModel.battleCells;
     const positions = [];
 
     let found = false;
@@ -202,7 +197,7 @@ export class MasterController extends Controller {
   }
 
   checkFinishType4() {
-    const battle = this.serverModel.battleCells;
+    const battle = this.roomModel.battleCells;
     const positions = [];
 
     let found = false;
@@ -238,7 +233,7 @@ export class MasterController extends Controller {
   }
 
   checkFinishType5() {
-    const battle = this.serverModel.battleCells;
+    const battle = this.roomModel.battleCells;
     const positions = [];
 
     let found = false;
@@ -274,7 +269,7 @@ export class MasterController extends Controller {
   }
 
   checkFinishType6() {
-    const battle = this.serverModel.battleCells;
+    const battle = this.roomModel.battleCells;
     const positions = [];
 
     let found = false;
@@ -305,7 +300,7 @@ export class MasterController extends Controller {
   }
 
   checkFinishType7() {
-    const battle = this.serverModel.battleCells;
+    const battle = this.roomModel.battleCells;
     const positions = [];
 
     let found = false;
