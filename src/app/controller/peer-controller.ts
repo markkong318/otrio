@@ -1,9 +1,8 @@
 import {Controller} from '../../framework/controller';
-import bottle from '../../framework/bottle';
 import Peer, {MeshRoom} from 'skyway-js';
 import {API_KEY} from '../env/server';
 import event from '../../framework/event';
-import {EVENT_CLIENT_START, EVENT_START_BATTLE} from '../env/event';
+import {EVENT_PEER_START, EVENT_PEER_SEND_PUT, EVENT_START_BATTLE, EVENT_RENDER_BATTLE} from '../env/event';
 import {EventClientStartMsg} from '../env/msg';
 import {PeerModel} from '../model/peer-model';
 import {PLAYER_IDS} from '../env/game';
@@ -21,7 +20,8 @@ export class PeerController extends Controller {
   }
 
   init() {
-    event.on(EVENT_CLIENT_START, (msg) => this.startClient(msg));
+    event.on(EVENT_PEER_START, this.startClient, this);
+    event.on(EVENT_PEER_SEND_PUT, this.sendPut, this)
   }
 
   startClient(msg: EventClientStartMsg) {
@@ -50,18 +50,18 @@ export class PeerController extends Controller {
   }
 
   onRoomOpen() {
-    console.log(`[client#${this.peer.id}] join room`);
+    console.log(`[client] ${this.peer.id} > join room`);
   }
 
   onReceive({data, src}) {
-    console.log(`[client#${this.peer.id}] ${src}$ said ${JSON.stringify(data)}`);
+    console.log(`[client] ${this.peer.id} > ${src}$ said ${JSON.stringify(data)}`);
 
     const {cmd} = data;
     switch (cmd) {
       case 'start':
         this.onReceiveStart({data, src});
         break;
-      case 'put-allow':
+      case 'allow-put':
         this.onReceivePutAllow({data, src});
         break;
     }
@@ -90,19 +90,33 @@ export class PeerController extends Controller {
 
   onReceivePutAllow({data, src}) {
     const {
-      cmd,
-      peerId,
-      from: {
-        x: fromX,
-        level: fromLevel,
-      },
-      to: {
-        x: toX,
-        y: toY,
-        level: toLevel,
-      },
+      fromX,
+      fromLevel,
+      toX,
+      toY,
+      toLevel,
       turn,
       positions,
     } = data;
+
+    this.peerGameController.put(turn, fromX, fromLevel, toX, toY, toLevel);
+
+    event.emit(EVENT_RENDER_BATTLE);
+  }
+
+  send(data) {
+    console.log(`[client] ${this.peer.id} > ${JSON.stringify(data)}`);
+    this.room.send(data);
+  }
+
+  sendPut({fromX, fromLevel, toX, toY, toLevel}: {fromX: number, fromLevel: number, toX: number, toY: number, toLevel: number}) {
+    this.send({
+      cmd: 'put',
+      fromX,
+      fromLevel,
+      toX,
+      toY,
+      toLevel,
+    });
   }
 }

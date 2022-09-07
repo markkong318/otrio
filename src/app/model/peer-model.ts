@@ -1,6 +1,4 @@
 import {Model} from '../../framework/model';
-import bottle from '../../framework/bottle';
-import {PLAYER_IDS, PLAYER_NONE} from '../env/game';
 
 export class PeerModel extends Model {
   public playerCells: number[][][];
@@ -14,7 +12,6 @@ export class PeerModel extends Model {
 
   constructor() {
     super();
-    bottle.setObject(this);
   }
 
 }

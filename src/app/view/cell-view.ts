@@ -5,8 +5,7 @@ import bottle from '../../framework/bottle';
 import {CircleTexture} from '../texture/circle-texture';
 import {CELL_LEVEL_1, CELL_LEVEL_2, CELL_LEVEL_3} from '../env/cell';
 import event from '../../framework/event';
-import {EVENT_CELL_MOVE, EVENT_CELL_OUT} from '../env/event';
-import {EventCellMoveMsg, EventCellOutMsg} from '../env/msg';
+import {EVENT_CELL_VIEW_MOVE, EVENT_CELL_VIEW_OUT} from '../env/event';
 
 export class CellView extends View {
   private background: PIXI.Sprite;
@@ -19,6 +18,9 @@ export class CellView extends View {
 
   private initX: number;
   private initY: number;
+
+  private idx: number;
+  private level: number;
 
   constructor() {
     super();
@@ -91,16 +93,20 @@ export class CellView extends View {
     this.buttonMode = !!flag;
   }
 
-  getLevel() {
-    if (this.levelSprites[CELL_LEVEL_1].visible) {
-      return CELL_LEVEL_1;
-    } else if (this.levelSprites[CELL_LEVEL_2].visible) {
-      return CELL_LEVEL_2;
-    } else if (this.levelSprites[CELL_LEVEL_3].visible) {
-      return CELL_LEVEL_3;
-    }
+  getLevel(): number {
+    return this.level;
+  }
 
-    throw new Error('Not valid cell');
+  setLevel(level: number) {
+    this.level = level;
+  }
+
+  getIdx(): number {
+    return this.idx;
+  }
+
+  setIdx(idx: number) {
+    this.idx = idx;
   }
 
   resetPosition() {
@@ -140,13 +146,13 @@ export class CellView extends View {
     this.position.x = point.x - this.dragPoint.x;
     this.position.y = point.y - this.dragPoint.y;
 
-    event.emit(EVENT_CELL_MOVE, new EventCellMoveMsg(this));
+    event.emit(EVENT_CELL_VIEW_MOVE, {view: this});
   }
 
   onPointerOut(evt: PIXI.InteractionEvent) {
     console.log('onPointerOut');
     this.isDragged = false;
 
-    event.emit(EVENT_CELL_OUT, new EventCellOutMsg(this));
+    event.emit(EVENT_CELL_VIEW_OUT, {view: this});
   }
 }

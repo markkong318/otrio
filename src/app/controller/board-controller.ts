@@ -1,12 +1,12 @@
 import {Controller} from '../../framework/controller';
 import {PeerModel} from '../model/peer-model';
-import bottle from '../../framework/bottle';
 import {BoardView} from '../view/board-view';
 import event from '../../framework/event';
-import {EVENT_START_BATTLE, EVENT_UPDATE_BATTLE} from '../env/event';
+import {EVENT_PEER_SEND_PUT, EVENT_START_BATTLE, EVENT_UPDATE_BATTLE} from '../env/event';
 import {EventUpdateBattleMsg} from '../env/msg';
-import {PLAYER_IDS, PLAYER_NONE} from '../env/game';
-import {CELL_COLOR_EMPTY, CELL_COLOR_NONE, CELL_COLOR_PLAYERS} from '../env/cell';
+import {PLAYER_NONE} from '../env/game';
+import {CELL_COLOR_NONE, CELL_COLOR_PLAYERS} from '../env/cell';
+import {CellView} from '../view/cell-view';
 
 export class BoardController extends Controller {
   private peerModel: PeerModel;
@@ -17,8 +17,8 @@ export class BoardController extends Controller {
   }
 
   init() {
-    event.on(EVENT_START_BATTLE, () => this.renderBattleAndPlayers());
-    event.on(EVENT_UPDATE_BATTLE, (msg) => this.onEventUpdateBattle(msg));
+    event.on(EVENT_START_BATTLE, this.renderBattleAndPlayers, this);
+    event.on(EVENT_UPDATE_BATTLE, this.onEventUpdateBattle, this);
   }
 
   renderPlayer({peerId}) {
@@ -48,9 +48,8 @@ export class BoardController extends Controller {
     this.boardView.renderBattle(this.peerModel.battleCells);
   }
 
-  onEventUpdateBattle(msg: EventUpdateBattleMsg) {
+  onEventUpdateBattle({view, x, y}: {view: CellView, x: number, y: number}) {
     console.log('onEventUpdateBattle')
-    const {view, x, y} = msg;
     const level = view.getLevel();
 
     if (x == -1 || y == -1) {
@@ -67,6 +66,15 @@ export class BoardController extends Controller {
 
     view.resetPosition();
     view.setMovable(false);
+    view.setSelected(false);
     view.setColor(level, CELL_COLOR_NONE);
+
+    event.emit(EVENT_PEER_SEND_PUT, {
+      fromX: view.getIdx(),
+      fromLevel: view.getLevel(),
+      toX: x,
+      toY: y,
+      toLevel: level,
+    });
   }
 }

@@ -81,6 +81,7 @@ export class GameApplication extends Application {
     this.peerGameController = new PeerGameController();
     this.peerGameController.init();
 
+    // TODO: test code
     event.emit(EVENT_SERVER_START);
   }
 

@@ -1,23 +1,17 @@
 import {Controller} from '../../framework/controller';
-import bottle from '../../framework/bottle';
-import Peer, {MeshRoom} from 'skyway-js';
-import {API_KEY} from '../env/server';
-import event from '../../framework/event';
-import {EVENT_CLIENT_START, EVENT_START_BATTLE} from '../env/event';
-import {EventClientStartMsg} from '../env/msg';
 import {PeerModel} from '../model/peer-model';
 import {PLAYER_IDS, PLAYER_NONE} from '../env/game';
+import {MessageView} from '../view/message-view';
 
 export class PeerGameController extends Controller {
   private peerModel: PeerModel;
+  private messageView: MessageView;
 
   constructor() {
     super();
   }
 
-  put(peerId, fromX, fromLevel, toX, toY, toLevel) {
-    const idx = this.peerModel.peerIds.indexOf(peerId);
-
+  put(idx, fromX, fromLevel, toX, toY, toLevel) {
     const playerId = PLAYER_IDS[idx];
 
     if (this.peerModel.playerCells[idx][fromX][fromLevel] !== playerId) {
@@ -30,6 +24,17 @@ export class PeerGameController extends Controller {
 
     this.peerModel.playerCells[idx][fromX][fromLevel] = PLAYER_NONE;
     this.peerModel.battleCells[toX][toY][toLevel] = playerId;
+
+    console.log("peer battle cell:");
+    console.log(this.peerModel.battleCells);
+  }
+
+  nextTurn(idx: number) {
+    if (idx == this.peerModel.idx) {
+      this.messageView.setText('Your turn!');
+    } else {
+      this.messageView.setText('Wait other player');
+    }
   }
 
   reset() {

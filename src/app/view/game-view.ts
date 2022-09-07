@@ -5,11 +5,13 @@ import {CellView} from './cell-view';
 import {Size} from '../../framework/size';
 import {BoardView} from './board-view';
 import {RoomView} from './dialog/room-view';
+import {MessageView} from './message-view';
 
 export class GameView extends View {
   private background: PIXI.Sprite;
   private boardView: BoardView;
   private roomView: RoomView;
+  private messageView: MessageView;
 
   constructor() {
     super();
@@ -40,11 +42,19 @@ export class GameView extends View {
     this.boardView.init();
     this.addChild(this.boardView);
 
+    this.messageView = new MessageView();
+    this.messageView.size = new Size(this.width, 40);
+    this.messageView.y = this.boardView.y + this.boardView.height;
+    this.messageView.init();
+    this.addChild(this.messageView);
+
     this.roomView = new RoomView();
     this.roomView.size = new Size(this.width, this.height);
     this.roomView.init();
     this.roomView.visible = false;
     this.addChild(this.roomView);
+
+
 
   }
 }

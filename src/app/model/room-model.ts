@@ -1,5 +1,4 @@
 import {Model} from '../../framework/model';
-import bottle from '../../framework/bottle';
 
 export class RoomModel extends Model {
   public playerCells: number[][][];
@@ -8,10 +7,9 @@ export class RoomModel extends Model {
   public count: number = 0;
 
   public peerIds: string[] = [];
-  public turn: number;
+  public turn: number = 0;
 
   constructor() {
     super();
-    bottle.setObject(this);
   }
 }

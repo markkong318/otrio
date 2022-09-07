@@ -1,35 +1,31 @@
+import * as PIXI from 'pixi.js';
+
 import {View} from '../../framework/view';
-import bottle from '../../framework/bottle';
 import {CellView} from './cell-view';
 import {Size} from '../../framework/size';
 import {
   CELL_COLOR_EMPTY,
   CELL_COLOR_NONE,
-  CELL_COLOR_PLAYER_1, CELL_COLOR_PLAYER_2, CELL_COLOR_PLAYER_3, CELL_COLOR_PLAYER_4, CELL_COLOR_PLAYERS,
+  CELL_COLOR_PLAYER_1, CELL_COLOR_PLAYER_2, CELL_COLOR_PLAYER_3, CELL_COLOR_PLAYER_4,
   CELL_LEVEL_1,
   CELL_LEVEL_2,
   CELL_LEVEL_3
 } from '../env/cell';
 import {PLAYER_1_ID, PLAYER_2_ID, PLAYER_3_ID, PLAYER_4_ID, PLAYER_NONE} from '../env/game';
 import event from '../../framework/event';
-import {EVENT_CELL_MOVE, EVENT_CELL_OUT, EVENT_UPDATE_BATTLE} from '../env/event';
-import {EventCellMoveMsg, EventCellOutMsg, EventUpdateBattleMsg} from '../env/msg';
+import {EVENT_CELL_VIEW_MOVE, EVENT_CELL_VIEW_OUT, EVENT_UPDATE_BATTLE} from '../env/event';
 
 export class BoardView extends View {
   private battleCellViews: CellView[][];
 
-  private player1CellViews: CellView[];
-  private player2CellViews: CellView[];
-  private player3CellViews: CellView[];
-  private player4CellViews: CellView[][];
+  private playerLeftCellViews: CellView[];
+  private playerUpCellViews: CellView[];
+  private playerRightCellViews: CellView[];
+  private playerDownCellViews: CellView[][];
+  private maskView: PIXI.Sprite;
 
   private selectedX: number = -1;
   private selectedY: number = -1;
-
-  constructor() {
-    super();
-    bottle.setObject(this);
-  }
 
   public init() {
     this.initBattle();
@@ -37,9 +33,10 @@ export class BoardView extends View {
     this.initPlayerUp();
     this.initPlayerRight();
     this.initPlayerDown();
+    this.initMaskView();
 
-    event.on(EVENT_CELL_MOVE, (msg) => this.onBattlePointerMove(msg));
-    event.on(EVENT_CELL_OUT, (msg) => this.onBattlePointerOut(msg));
+    event.on(EVENT_CELL_VIEW_MOVE, this.onCellViewMove, this);
+    event.on(EVENT_CELL_VIEW_OUT, this.onCellViewOut, this);
   }
 
   initBattle() {
@@ -47,88 +44,100 @@ export class BoardView extends View {
     for (let i = 0; i < 3; i++) {
       this.battleCellViews[i] = [];
       for (let j = 0; j < 3; j++) {
-        const cell = new CellView();
-        cell.size = new Size(96, 96);
-        cell.x = 96 + 96 * j;
-        cell.y = 96 + 96 * i;
-        cell.init();
+        const view = new CellView();
+        view.size = new Size(96, 96);
+        view.x = 96 + 96 * j;
+        view.y = 96 + 96 * i;
+        view.init();
 
-        this.addChild(cell);
+        this.addChild(view);
 
-        this.battleCellViews[i][j] = cell;
+        this.battleCellViews[i][j] = view;
       }
     }
   }
 
   initPlayerLeft() {
-    this.player1CellViews = [];
+    this.playerLeftCellViews = [];
     for (let i = 0; i < 3; i++) {
-      const cell = new CellView();
-      cell.size = new Size(96, 96);
-      cell.x = 0;
-      cell.y = 96 + 96 * i;
-      cell.init();
+      const view = new CellView();
+      view.size = new Size(96, 96);
+      view.x = 0;
+      view.y = 96 + 96 * i;
+      view.init();
 
-      this.addChild(cell);
+      this.addChild(view);
 
-      this.player1CellViews[i] = cell;
+      this.playerLeftCellViews[i] = view;
     }
   }
 
   initPlayerUp() {
-    this.player2CellViews = [];
+    this.playerUpCellViews = [];
     for (let i = 0; i < 3; i++) {
-      const cell = new CellView();
-      cell.size = new Size(96, 96);
-      cell.x = 96 + 96 * i;
-      cell.y = 0;
-      cell.init();
+      const view = new CellView();
+      view.size = new Size(96, 96);
+      view.x = 96 + 96 * i;
+      view.y = 0;
+      view.init();
 
-      this.addChild(cell);
+      this.addChild(view);
 
-      this.player2CellViews[i] = cell;
+      this.playerUpCellViews[i] = view;
     }
   }
 
   initPlayerRight() {
-    this.player3CellViews = [];
+    this.playerRightCellViews = [];
     for (let i = 0; i < 3; i++) {
-      const cell = new CellView();
-      cell.size = new Size(96, 96);
-      cell.x = 96 * 4;
-      cell.y = 96 + 96 * i;
-      cell.init();
+      const view = new CellView();
+      view.size = new Size(96, 96);
+      view.x = 96 * 4;
+      view.y = 96 + 96 * i;
+      view.init();
 
-      this.addChild(cell);
+      this.addChild(view);
 
-      this.player3CellViews[i] = cell;
+      this.playerRightCellViews[i] = view;
     }
   }
 
   initPlayerDown() {
-    this.player4CellViews = []
+    this.playerDownCellViews = []
     for (let i = 0; i < 3; i++) {
-      this.player4CellViews[i] = []
+      this.playerDownCellViews[i] = []
       for (let j = 0; j < 3; j++) {
-        const cell = new CellView();
-        cell.size = new Size(96, 96);
-        cell.x = 96 + 96 * i;
-        cell.y = 96 * 4 + 96 * j;
-        cell.init();
+        const view = new CellView();
+        view.size = new Size(96, 96);
+        view.x = 96 + 96 * i;
+        view.y = 96 * 4 + 96 * j;
+        view.init();
 
-        cell.setMovable(true);
+        view.setLevel(j);
+        view.setIdx(i)
 
-        this.addChild(cell);
+        this.addChild(view);
 
-        this.player4CellViews[i][j] = cell;
+        this.playerDownCellViews[i][j] = view;
       }
     }
+  }
+
+  initMaskView() {
+    this.maskView = new PIXI.Sprite(PIXI.Texture.WHITE);
+    this.maskView.width = 96 * 3;
+    this.maskView.height = 96 * 3;
+    this.x = this.playerDownCellViews[0][0].x;
+    this.y = this.playerDownCellViews[0][0].y;
+    // this.maskView.tint = 0xc5a26d;
+    this.addChild(this.maskView);
+
   }
 
   renderPlayerLeft(cells: number[][], color: number) {
     for (let i = 0; i < cells.length; i++) {
       const cell = cells[i]
-      const view = this.player1CellViews[i];
+      const view = this.playerLeftCellViews[i];
 
       cell[CELL_LEVEL_1] ? view.setColor(CELL_LEVEL_1, color) : view.setColor(CELL_LEVEL_1, CELL_COLOR_NONE);
       cell[CELL_LEVEL_2] ? view.setColor(CELL_LEVEL_2, color) : view.setColor(CELL_LEVEL_2, CELL_COLOR_NONE);
@@ -139,7 +148,7 @@ export class BoardView extends View {
   renderPlayerUp(cells: number[][], color: number) {
     for (let i = 0; i < cells.length; i++) {
       const cell = cells[i]
-      const view = this.player2CellViews[i];
+      const view = this.playerUpCellViews[i];
 
       cell[CELL_LEVEL_1] ? view.setColor(CELL_LEVEL_1, color) : view.setColor(CELL_LEVEL_1, CELL_COLOR_NONE);
       cell[CELL_LEVEL_2] ? view.setColor(CELL_LEVEL_2, color) : view.setColor(CELL_LEVEL_2, CELL_COLOR_NONE);
@@ -150,7 +159,7 @@ export class BoardView extends View {
   renderPlayerRight(cells: number[][], color: number) {
     for (let i = 0; i < cells.length; i++) {
       const cell = cells[i]
-      const view = this.player3CellViews[i];
+      const view = this.playerRightCellViews[i];
 
       cell[CELL_LEVEL_1] ? view.setColor(CELL_LEVEL_1, color) : view.setColor(CELL_LEVEL_1, CELL_COLOR_NONE);
       cell[CELL_LEVEL_2] ? view.setColor(CELL_LEVEL_2, color) : view.setColor(CELL_LEVEL_2, CELL_COLOR_NONE);
@@ -159,21 +168,26 @@ export class BoardView extends View {
   }
 
   renderPlayerDown(cells: number[][], color: number) {
-    for (let i = 0; i < this.player4CellViews.length; i++) {
-      for (let j = 0; j < this.player4CellViews[i].length; j++) {
-        this.player4CellViews[i][j].setColor(CELL_LEVEL_1, CELL_COLOR_NONE);
-        this.player4CellViews[i][j].setColor(CELL_LEVEL_2, CELL_COLOR_NONE);
-        this.player4CellViews[i][j].setColor(CELL_LEVEL_3, CELL_COLOR_NONE);
+    for (let i = 0; i < this.playerDownCellViews.length; i++) {
+      for (let j = 0; j < this.playerDownCellViews[i].length; j++) {
+        this.playerDownCellViews[i][j].setColor(CELL_LEVEL_1, CELL_COLOR_NONE);
+        this.playerDownCellViews[i][j].setColor(CELL_LEVEL_2, CELL_COLOR_NONE);
+        this.playerDownCellViews[i][j].setColor(CELL_LEVEL_3, CELL_COLOR_NONE);
+
+        this.playerDownCellViews[i][j].setMovable(false);
       }
     }
 
     for (let i = 0; i < cells.length; i++) {
       const cell = cells[i]
-      const view = this.player4CellViews[i];
+      const view = this.playerDownCellViews[i];
 
-      cell[CELL_LEVEL_1] ? view[0].setColor(CELL_LEVEL_1, color) : view[0].setColor(CELL_LEVEL_1, CELL_COLOR_NONE);
-      cell[CELL_LEVEL_2] ? view[1].setColor(CELL_LEVEL_2, color) : view[1].setColor(CELL_LEVEL_2, CELL_COLOR_NONE);
-      cell[CELL_LEVEL_3] ? view[2].setColor(CELL_LEVEL_3, color) : view[2].setColor(CELL_LEVEL_3, CELL_COLOR_NONE);
+      cell[CELL_LEVEL_1] ?
+        (view[0].setColor(CELL_LEVEL_1, color), view[0].setMovable(true)) : view[0].setColor(CELL_LEVEL_1, CELL_COLOR_NONE);
+      cell[CELL_LEVEL_2] ?
+        (view[1].setColor(CELL_LEVEL_2, color), view[1].setMovable(true)) : view[1].setColor(CELL_LEVEL_2, CELL_COLOR_NONE);
+      cell[CELL_LEVEL_3] ?
+        (view[2].setColor(CELL_LEVEL_3, color), view[2].setMovable(true)) : view[2].setColor(CELL_LEVEL_3, CELL_COLOR_NONE);
     }
   }
 
@@ -214,22 +228,22 @@ export class BoardView extends View {
   }
 
   drawPlayerLeft(x: number, level: number, color: number) {
-    const view = this.player1CellViews[x];
+    const view = this.playerLeftCellViews[x];
     view.setColor(level, color);
   }
 
   drawPlayerUp(x: number, level: number, color: number) {
-    const view = this.player2CellViews[x];
+    const view = this.playerUpCellViews[x];
     view.setColor(level, color);
   }
 
   drawPlayerRight(x: number, level: number, color: number) {
-    const view = this.player3CellViews[x];
+    const view = this.playerRightCellViews[x];
     view.setColor(level, color);
   }
 
   drawPlayerDown(x: number, level: number, color: number) {
-    const view = this.player4CellViews[x][level];
+    const view = this.playerDownCellViews[x][level];
     view.setColor(level, color);
   }
 
@@ -255,8 +269,7 @@ export class BoardView extends View {
     return [-1, -1];
   }
 
-  onBattlePointerMove(msg: EventCellMoveMsg) {
-    const {view} = msg;
+  onCellViewMove({view}: {view: CellView}) {
     const [selectedX, selectedY] = this.getBattlePosition(view);
 
     if (this.selectedX == selectedX && this.selectedY == selectedY) {
@@ -273,10 +286,12 @@ export class BoardView extends View {
     }
   }
 
-  onBattlePointerOut(msg: EventCellMoveMsg) {
-    this.onBattlePointerMove(msg);
+  onCellViewOut({view}: {view: CellView}) {
+    this.onCellViewMove({view});
+    event.emit(EVENT_UPDATE_BATTLE, {view, x: this.selectedX, y: this.selectedY});
+  }
 
-    const {view} = msg;
-    event.emit(EVENT_UPDATE_BATTLE, new EventUpdateBattleMsg(view, this.selectedX, this.selectedY));
+  setMaskVisible(flag: boolean) {
+    this.maskView.visible = !!flag;
   }
 }

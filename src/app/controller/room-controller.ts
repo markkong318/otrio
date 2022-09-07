@@ -2,11 +2,10 @@ import Peer, {MeshRoom} from 'skyway-js';
 import {v4 as uuidv4} from 'uuid';
 
 import {Controller} from '../../framework/controller';
-import bottle from '../../framework/bottle';
 import {RoomModel} from '../model/room-model';
 import {API_KEY} from '../env/server';
 import event from '../../framework/event';
-import {EVENT_CLIENT_START, EVENT_SERVER_START} from '../env/event';
+import {EVENT_PEER_START, EVENT_SERVER_START} from '../env/event';
 import {EventClientStartMsg} from '../env/msg';
 import {RoomGameController} from './room-game-controller';
 
@@ -52,12 +51,13 @@ export class RoomController extends Controller {
       this.room.on('peerJoin', peerId => this.onRoomPeerJoin(peerId));
       this.room.on('peerLeave', peerId => this.onRoomPeerLeave(peerId));
       this.room.on('data', ({data, src}) => this.onRoomData({data, src}));
+
     });
   }
 
   onRoomOpen() {
     console.log(`[server] room ${this.room.name} is created`);
-    event.emit(EVENT_CLIENT_START, new EventClientStartMsg(this.room.name));
+    event.emit(EVENT_PEER_START, new EventClientStartMsg(this.room.name));
   }
 
   onRoomPeerJoin(peerId) {
@@ -65,6 +65,7 @@ export class RoomController extends Controller {
     this.roomModel.peerIds.push(peerId);
     this.roomModel.count++;
 
+    // TODO: test
     this.sendStart();
   }
 
@@ -92,35 +93,27 @@ export class RoomController extends Controller {
 
   onReceivePut({data, src}) {
     const {
-      from: {
-        x: fromX,
-        level: fromLevel,
-      },
-      to: {
-        x: toX,
-        y: toY,
-        level: toLevel,
-      }
+      fromX,
+      fromLevel,
+      toX,
+      toY,
+      toLevel,
     } = data;
 
     this.roomGameController.put(src, fromX, fromLevel, toX, toY, toLevel);
 
     const positions = this.roomGameController.checkFinish();
-    const turn = this.roomGameController.nextTurn();
+    const nextIdx = this.roomGameController.nextTurn();
 
     this.room.send({
       cmd: 'allow-put',
       peerId: src,
-      from: {
-        x: fromX,
-        level: fromLevel,
-      },
-      to: {
-        x: toX,
-        y: toY,
-        level: toLevel,
-      },
-      turn,
+      fromX,
+      fromLevel,
+      toX,
+      toY,
+      toLevel,
+      nextIdx,
       positions,
     });
   }
@@ -133,9 +126,5 @@ export class RoomController extends Controller {
       peerIds: this.roomModel.peerIds,
       turn: this.roomModel.turn,
     });
-  }
-
-  sendUpdate() {
-
   }
 }

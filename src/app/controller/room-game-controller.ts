@@ -1,13 +1,5 @@
-import Peer, {MeshRoom} from 'skyway-js';
-import {v4 as uuidv4} from 'uuid';
-
 import {Controller} from '../../framework/controller';
-import bottle from '../../framework/bottle';
 import {RoomModel} from '../model/room-model';
-import {API_KEY} from '../env/server';
-import event from '../../framework/event';
-import {EVENT_CLIENT_START, EVENT_SERVER_START} from '../env/event';
-import {EventClientStartMsg} from '../env/msg';
 import {PLAYER_IDS, PLAYER_NONE} from '../env/game';
 
 export class RoomGameController extends Controller {
