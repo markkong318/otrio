@@ -1,11 +1,9 @@
 import {Controller} from '../../framework/controller';
 import {PeerModel} from '../model/peer-model';
 import {PLAYER_IDS, PLAYER_NONE} from '../env/game';
-import {MessageView} from '../view/message-view';
 
 export class PeerGameController extends Controller {
   private peerModel: PeerModel;
-  private messageView: MessageView;
 
   constructor() {
     super();
@@ -27,14 +25,6 @@ export class PeerGameController extends Controller {
 
     console.log("peer battle cell:");
     console.log(this.peerModel.battleCells);
-  }
-
-  nextTurn(idx: number) {
-    if (idx == this.peerModel.idx) {
-      this.messageView.setText('Your turn!');
-    } else {
-      this.messageView.setText('Wait other player');
-    }
   }
 
   reset() {

@@ -13,7 +13,7 @@ import {
 } from '../env/cell';
 import {PLAYER_1_ID, PLAYER_2_ID, PLAYER_3_ID, PLAYER_4_ID, PLAYER_NONE} from '../env/game';
 import event from '../../framework/event';
-import {EVENT_CELL_VIEW_MOVE, EVENT_CELL_VIEW_OUT, EVENT_UPDATE_BATTLE} from '../env/event';
+import {EVENT_CELL_VIEW_MOVE, EVENT_CELL_VIEW_OUT, EVENT_CELL_VIEW_PUT} from '../env/event';
 
 export class BoardView extends View {
   private battleCellViews: CellView[][];
@@ -124,14 +124,13 @@ export class BoardView extends View {
   }
 
   initMaskView() {
-    this.maskView = new PIXI.Sprite(PIXI.Texture.WHITE);
+    this.maskView = new PIXI.Sprite(PIXI.Texture.EMPTY);
     this.maskView.width = 96 * 3;
     this.maskView.height = 96 * 3;
-    this.x = this.playerDownCellViews[0][0].x;
-    this.y = this.playerDownCellViews[0][0].y;
-    // this.maskView.tint = 0xc5a26d;
+    this.maskView.x = this.playerDownCellViews[0][0].x;
+    this.maskView.y = this.playerDownCellViews[0][0].y;
+    this.maskView.interactive = true;
     this.addChild(this.maskView);
-
   }
 
   renderPlayerLeft(cells: number[][], color: number) {
@@ -227,6 +226,19 @@ export class BoardView extends View {
     }
   }
 
+  renderWinnerPosition(positions: number[][]) {
+    for (let i = 0; i < this.battleCellViews.length; i++) {
+      for (let j = 0; j < this.battleCellViews[i].length; j++) {
+        this.battleCellViews[i][j].setWinner(false);
+      }
+    }
+
+    for (let i = 0; i < positions.length; i++) {
+      const [x, y] = positions[i];
+      this.battleCellViews[x][y].setWinner(true);
+    }
+  }
+
   drawPlayerLeft(x: number, level: number, color: number) {
     const view = this.playerLeftCellViews[x];
     view.setColor(level, color);
@@ -288,7 +300,14 @@ export class BoardView extends View {
 
   onCellViewOut({view}: {view: CellView}) {
     this.onCellViewMove({view});
-    event.emit(EVENT_UPDATE_BATTLE, {view, x: this.selectedX, y: this.selectedY});
+
+    for (let i = 0; i < this.battleCellViews.length; i++) {
+      for (let j = 0; j < this.battleCellViews[i].length; j++) {
+        this.battleCellViews[i][j].setSelected(false);
+      }
+    }
+
+    event.emit(EVENT_CELL_VIEW_PUT, {view, x: this.selectedX, y: this.selectedY});
   }
 
   setMaskVisible(flag: boolean) {

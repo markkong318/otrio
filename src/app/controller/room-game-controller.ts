@@ -12,7 +12,7 @@ export class RoomGameController extends Controller {
   put(peerId, fromX, fromLevel, toX, toY, toLevel) {
     const idx = this.roomModel.peerIds.indexOf(peerId);
 
-    if (idx != this.roomModel.turn) {
+    if (idx != this.roomModel.idx) {
       throw new Error('Not a valid turn');
     }
 
@@ -31,8 +31,8 @@ export class RoomGameController extends Controller {
   }
 
   nextTurn() {
-    this.roomModel.turn = (this.roomModel.turn + 1) % this.roomModel.peerIds.length;
-    return this.roomModel.turn;
+    this.roomModel.idx = (this.roomModel.idx + 1) % this.roomModel.peerIds.length;
+    return this.roomModel.idx;
   }
 
   reset() {

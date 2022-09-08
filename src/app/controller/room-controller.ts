@@ -102,7 +102,13 @@ export class RoomController extends Controller {
 
     this.roomGameController.put(src, fromX, fromLevel, toX, toY, toLevel);
 
-    const positions = this.roomGameController.checkFinish();
+    const winnerPositions = this.roomGameController.checkFinish();
+
+    let winnerIdx;
+    if (!!winnerPositions.length) {
+      winnerIdx = this.roomModel.idx;
+    }
+
     const nextIdx = this.roomGameController.nextTurn();
 
     this.room.send({
@@ -114,7 +120,8 @@ export class RoomController extends Controller {
       toY,
       toLevel,
       nextIdx,
-      positions,
+      winnerIdx,
+      winnerPositions,
     });
   }
 
@@ -124,7 +131,7 @@ export class RoomController extends Controller {
     this.room.send({
       cmd: 'start',
       peerIds: this.roomModel.peerIds,
-      turn: this.roomModel.turn,
+      nextIdx: this.roomModel.idx,
     });
   }
 }

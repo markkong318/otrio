@@ -2,7 +2,7 @@ import * as PIXI from 'pixi.js';
 
 import {View} from '../../framework/view';
 import bottle from '../../framework/bottle';
-import {CircleTexture} from '../texture/circle-texture';
+import {CellTexture} from '../texture/cell-texture';
 import {CELL_LEVEL_1, CELL_LEVEL_2, CELL_LEVEL_3} from '../env/cell';
 import event from '../../framework/event';
 import {EVENT_CELL_VIEW_MOVE, EVENT_CELL_VIEW_OUT} from '../env/event';
@@ -12,6 +12,7 @@ export class CellView extends View {
 
   private levelSprites: PIXI.Sprite[];
   private selectedSprite: PIXI.Sprite;
+  private finishSprite: PIXI.Sprite;
 
   private isDragged: boolean = false;
   private dragPoint: PIXI.Point;
@@ -35,15 +36,25 @@ export class CellView extends View {
     this.background.height = this.size.height;
     this.addChild(this.background);
 
-    const circleTexture = <CircleTexture>bottle.getObject(CircleTexture);
+    const circleTexture = <CellTexture>bottle.getObject(CellTexture);
 
-    this.selectedSprite = new PIXI.Sprite(circleTexture.SELECTED);
+    this.selectedSprite = new PIXI.Sprite(circleTexture.RECT);
     this.selectedSprite.x = this.width / 2;
     this.selectedSprite.y = this.height / 2;
     this.selectedSprite.anchor.x = 0.5;
     this.selectedSprite.anchor.y = 0.5;
+    this.selectedSprite.tint = 0xcccccc;
     this.selectedSprite.visible = false;
     this.addChild(this.selectedSprite);
+
+    this.finishSprite = new PIXI.Sprite(circleTexture.RECT);
+    this.finishSprite.x = this.width / 2;
+    this.finishSprite.y = this.height / 2;
+    this.finishSprite.anchor.x = 0.5;
+    this.finishSprite.anchor.y = 0.5;
+    this.finishSprite.tint = 0xeac5d8;
+    this.finishSprite.visible = false;
+    this.addChild(this.finishSprite);
 
     this.levelSprites = [];
 
@@ -88,6 +99,10 @@ export class CellView extends View {
     this.selectedSprite.visible = !!flag;
   }
 
+  setWinner(flag: boolean) {
+    this.finishSprite.visible = !!flag;
+  }
+
   setMovable(flag: boolean) {
     this.interactive = !!flag;
     this.buttonMode = !!flag;
@@ -115,7 +130,6 @@ export class CellView extends View {
   }
 
   onPointerDown(event: PIXI.InteractionEvent) {
-    console.log('onPointerDown')
     const {
       data: {
         global,
@@ -132,8 +146,6 @@ export class CellView extends View {
     if (!this.isDragged) {
       return;
     }
-
-    console.log('onPointerMove');
 
     const {
       data: {

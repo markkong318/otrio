@@ -2,23 +2,24 @@ import {Controller} from '../../framework/controller';
 import {PeerModel} from '../model/peer-model';
 import {BoardView} from '../view/board-view';
 import event from '../../framework/event';
-import {EVENT_PEER_SEND_PUT, EVENT_START_BATTLE, EVENT_UPDATE_BATTLE} from '../env/event';
-import {EventUpdateBattleMsg} from '../env/msg';
+import {EVENT_PEER_SEND_PUT, EVENT_RENDER_BATTLE_AND_PLAYERS, EVENT_CELL_VIEW_PUT} from '../env/event';
 import {PLAYER_NONE} from '../env/game';
 import {CELL_COLOR_NONE, CELL_COLOR_PLAYERS} from '../env/cell';
 import {CellView} from '../view/cell-view';
+import {MessageView} from '../view/message-view';
 
 export class BoardController extends Controller {
   private peerModel: PeerModel;
   private boardView: BoardView;
+  private messageView: MessageView;
 
   constructor() {
     super();
   }
 
   init() {
-    event.on(EVENT_START_BATTLE, this.renderBattleAndPlayers, this);
-    event.on(EVENT_UPDATE_BATTLE, this.onEventUpdateBattle, this);
+    event.on(EVENT_RENDER_BATTLE_AND_PLAYERS, this.renderBattleAndPlayers, this);
+    event.on(EVENT_CELL_VIEW_PUT, this.onCellViewPut, this);
   }
 
   renderPlayer({peerId}) {
@@ -48,8 +49,34 @@ export class BoardController extends Controller {
     this.boardView.renderBattle(this.peerModel.battleCells);
   }
 
-  onEventUpdateBattle({view, x, y}: {view: CellView, x: number, y: number}) {
-    console.log('onEventUpdateBattle')
+  renderTurn() {
+    console.log()
+    if (this.peerModel.nextIdx == this.peerModel.idx) {
+      this.messageView.setText('Your turn!');
+      this.boardView.setMaskVisible(false);
+    } else {
+      this.messageView.setText('Wait other player');
+      this.boardView.setMaskVisible(true);
+    }
+  }
+
+  renderWinner() {
+    if (!this.peerModel.winnerIdx) {
+      return;
+    }
+
+    if (this.peerModel.winnerIdx == this.peerModel.idx) {
+      this.messageView.setText('You win!');
+    } else {
+      this.messageView.setText('You lose!');
+    }
+
+    this.boardView.setMaskVisible(false);
+
+    this.boardView.renderWinnerPosition(this.peerModel.winnerPositions);
+  }
+
+  onCellViewPut({view, x, y}: {view: CellView, x: number, y: number}) {
     const level = view.getLevel();
 
     if (x == -1 || y == -1) {
@@ -66,7 +93,6 @@ export class BoardController extends Controller {
 
     view.resetPosition();
     view.setMovable(false);
-    view.setSelected(false);
     view.setColor(level, CELL_COLOR_NONE);
 
     event.emit(EVENT_PEER_SEND_PUT, {

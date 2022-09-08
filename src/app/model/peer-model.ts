@@ -10,8 +10,11 @@ export class PeerModel extends Model {
 
   public peerIds: string[] = [];
 
+  public nextIdx: number;
+  public winnerIdx: number;
+  public winnerPositions: number[][] = [];
+
   constructor() {
     super();
   }
-
 }

@@ -2,13 +2,13 @@ import * as PIXI from 'pixi.js';
 import Bottle from '../../framework/bottle';
 import bottle from '../../framework/bottle';
 
-export class CircleTexture {
+export class CellTexture {
   private renderer: PIXI.Renderer;
 
   public LEVEL_1: PIXI.RenderTexture;
   public LEVEL_2: PIXI.RenderTexture;
   public LEVEL_3: PIXI.RenderTexture;
-  public SELECTED: PIXI.RenderTexture;
+  public RECT: PIXI.RenderTexture;
 
   init() {
     this.renderer = <PIXI.Renderer>Bottle.getObject(PIXI.Renderer);
@@ -16,7 +16,7 @@ export class CircleTexture {
     this.renderLevel0();
     this.renderLevel1();
     this.renderLevel2();
-    this.renderSelected();
+    this.renderRect();
 
     bottle.setObject(this);
   }
@@ -48,7 +48,7 @@ export class CircleTexture {
     this.LEVEL_3 = this.renderer.generateTexture(g, PIXI.SCALE_MODES.LINEAR, 2);
   }
 
-  private renderSelected() {
+  private renderRect() {
     const g = new PIXI.Graphics();
     g.beginFill(0xcccccc);
     g.drawRoundedRect(
@@ -60,6 +60,6 @@ export class CircleTexture {
     );
     g.endFill();
 
-    this.SELECTED = this.renderer.generateTexture(g, PIXI.SCALE_MODES.LINEAR, 2);
+    this.RECT = this.renderer.generateTexture(g, PIXI.SCALE_MODES.LINEAR, 2);
   }
 }

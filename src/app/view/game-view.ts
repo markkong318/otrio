@@ -39,6 +39,8 @@ export class GameView extends View {
     // this.addChild(cell);
 
     this.boardView = new BoardView();
+    this.boardView.x = 0;
+    this.boardView.y = 0;
     this.boardView.init();
     this.addChild(this.boardView);
 

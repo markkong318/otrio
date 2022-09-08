@@ -7,7 +7,7 @@ export class RoomModel extends Model {
   public count: number = 0;
 
   public peerIds: string[] = [];
-  public turn: number = 0;
+  public idx: number = 0;
 
   constructor() {
     super();

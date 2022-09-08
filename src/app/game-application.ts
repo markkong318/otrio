@@ -5,7 +5,7 @@ import {Application} from '../framework/application';
 import {Size} from '../framework/size';
 import {Storage} from './storage/storage';
 import bottle from '../framework/bottle';
-import {CircleTexture} from './texture/circle-texture';
+import {CellTexture} from './texture/cell-texture';
 import {RoomModel} from './model/room-model';
 import {RoomController} from './controller/room-controller';
 import {PeerController} from './controller/peer-controller';
@@ -24,7 +24,7 @@ export class GameApplication extends Application {
   private peerGameController: PeerGameController;
   private gameView: GameView;
   private storage: Storage;
-  private circleTexture: CircleTexture;
+  private circleTexture: CellTexture;
 
   constructor(options?) {
     super(options);
@@ -47,12 +47,12 @@ export class GameApplication extends Application {
 
     this.peerModel = new PeerModel();
     this.roomModel = new RoomModel();
-    this.clientModel = new PeerModel();
+    this.peerModel = new PeerModel();
 
     this.storage = new Storage();
     this.storage.init();
 
-    this.circleTexture = new CircleTexture();
+    this.circleTexture = new CellTexture();
     this.circleTexture.init();
 
     const viewWidth = 480;
