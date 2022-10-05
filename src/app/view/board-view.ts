@@ -14,6 +14,7 @@ import {
 import {PLAYER_1_ID, PLAYER_2_ID, PLAYER_3_ID, PLAYER_4_ID, PLAYER_NONE} from '../env/game';
 import event from '../../framework/event';
 import {EVENT_CELL_VIEW_MOVE, EVENT_CELL_VIEW_OUT, EVENT_CELL_VIEW_PUT} from '../env/event';
+import {MessageView} from './message-view';
 
 export class BoardView extends View {
   private battleCellViews: CellView[][];
@@ -22,6 +23,7 @@ export class BoardView extends View {
   private playerUpCellViews: CellView[];
   private playerRightCellViews: CellView[];
   private playerDownCellViews: CellView[][];
+  private messageView: MessageView;
   private maskView: PIXI.Sprite;
 
   private selectedX: number = -1;
@@ -33,6 +35,7 @@ export class BoardView extends View {
     this.initPlayerUp();
     this.initPlayerRight();
     this.initPlayerDown();
+    this.initMessageView();
     this.initMaskView();
 
     event.on(EVENT_CELL_VIEW_MOVE, this.onCellViewMove, this);
@@ -121,6 +124,14 @@ export class BoardView extends View {
         this.playerDownCellViews[i][j] = view;
       }
     }
+  }
+
+  initMessageView() {
+    this.messageView = new MessageView();
+    this.messageView.size = new Size(this.width, 40);
+    this.messageView.y = this.playerDownCellViews[0][2].y + this.playerDownCellViews[0][2].height;
+    this.messageView.init();
+    this.addChild(this.messageView);
   }
 
   initMaskView() {

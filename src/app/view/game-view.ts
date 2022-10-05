@@ -1,17 +1,18 @@
 import * as PIXI from 'pixi.js';
 
 import {View} from '../../framework/view';
-import {CellView} from './cell-view';
 import {Size} from '../../framework/size';
 import {BoardView} from './board-view';
-import {RoomView} from './dialog/room-view';
-import {MessageView} from './message-view';
+import {RoomDialogView} from './dialog/room-dialog-view';
+import {PeerDialogView} from './dialog/peer-dialog-view';
+import {ErrorDialogView} from './dialog/error-dialog-view';
 
 export class GameView extends View {
   private background: PIXI.Sprite;
   private boardView: BoardView;
-  private roomView: RoomView;
-  private messageView: MessageView;
+  private roomDialogView: RoomDialogView;
+  private peerDialogView: PeerDialogView;
+  private errorDialogView: ErrorDialogView;
 
   constructor() {
     super();
@@ -24,39 +25,25 @@ export class GameView extends View {
     this.background.tint = 0xf9f1e1;
     this.addChild(this.background);
 
-    // const message = new PIXI.Text("Hello World!");
-    // message.x = 200;
-    // message.y = 200;
-    // message.style.fontSize = "100px"
-    // message.style.fill = "black";
-    // this.addChild(message);
-
-    // const cell = new CellView();
-    // cell.size = new Size(96, 96);
-    // cell.x = 100;
-    // cell.y = 100;
-    // cell.init();
-    // this.addChild(cell);
-
     this.boardView = new BoardView();
-    this.boardView.x = 0;
-    this.boardView.y = 0;
     this.boardView.init();
+    this.boardView.x = 0;
+    this.boardView.y = (this.height - this.boardView.height) / 2;
     this.addChild(this.boardView);
 
-    this.messageView = new MessageView();
-    this.messageView.size = new Size(this.width, 40);
-    this.messageView.y = this.boardView.y + this.boardView.height;
-    this.messageView.init();
-    this.addChild(this.messageView);
+    this.roomDialogView = new RoomDialogView();
+    this.roomDialogView.size = new Size(this.width, this.height);
+    this.roomDialogView.init();
+    this.addChild(this.roomDialogView);
 
-    this.roomView = new RoomView();
-    this.roomView.size = new Size(this.width, this.height);
-    this.roomView.init();
-    this.roomView.visible = false;
-    this.addChild(this.roomView);
+    this.peerDialogView = new PeerDialogView();
+    this.peerDialogView.size = new Size(this.width, this.height);
+    this.peerDialogView.init();
+    this.addChild(this.peerDialogView);
 
-
-
+    this.errorDialogView = new ErrorDialogView();
+    this.errorDialogView.size = new Size(this.width, this.height);
+    this.errorDialogView.init();
+    this.addChild(this.errorDialogView);
   }
 }

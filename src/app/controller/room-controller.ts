@@ -5,13 +5,14 @@ import {Controller} from '../../framework/controller';
 import {RoomModel} from '../model/room-model';
 import {API_KEY} from '../env/server';
 import event from '../../framework/event';
-import {EVENT_PEER_START, EVENT_SERVER_START} from '../env/event';
-import {EventClientStartMsg} from '../env/msg';
+import {EVENT_PEER_START, EVENT_SERVER_SEND_START, EVENT_SERVER_START} from '../env/event';
 import {RoomGameController} from './room-game-controller';
+import {RoomDialogController} from './room-dialog-controller';
 
 export class RoomController extends Controller {
   private roomModel: RoomModel;
   private roomGameController: RoomGameController;
+  private roomDialogController: RoomDialogController;
 
   private peer: Peer;
   private room: MeshRoom;
@@ -21,14 +22,16 @@ export class RoomController extends Controller {
   }
 
   init() {
-    event.on(EVENT_SERVER_START, () => this.startServer());
+    event.on(EVENT_SERVER_START, () => this.start());
+    event.on(EVENT_SERVER_SEND_START, () => this.sendStart());
   }
 
   isAdmin() {
     return !!this.room;
   }
 
-  startServer() {
+  start() {
+    this.roomDialogController.show();
     this.createRoom();
   }
 
@@ -51,25 +54,33 @@ export class RoomController extends Controller {
       this.room.on('peerJoin', peerId => this.onRoomPeerJoin(peerId));
       this.room.on('peerLeave', peerId => this.onRoomPeerLeave(peerId));
       this.room.on('data', ({data, src}) => this.onRoomData({data, src}));
-
     });
   }
 
   onRoomOpen() {
     console.log(`[server] room ${this.room.name} is created`);
-    event.emit(EVENT_PEER_START, new EventClientStartMsg(this.room.name));
+    event.emit(EVENT_PEER_START, {roomId: this.room.name, silence: true});
+
+    this.roomDialogController.setRoomId(this.room.name);
   }
 
-  onRoomPeerJoin(peerId) {
+  onRoomPeerJoin(peerId: string) {
+    if (this.roomModel.count >= 4) {
+      this.sendKick(peerId);
+      return;
+    }
+
     console.log(`[server] peer ${peerId} is joined`);
     this.roomModel.peerIds.push(peerId);
     this.roomModel.count++;
 
+    this.roomDialogController.setCount(this.roomModel.count);
+
     // TODO: test
-    this.sendStart();
+    // this.sendStart();
   }
 
-  onRoomPeerLeave(peerId) {
+  onRoomPeerLeave(peerId: string) {
     console.log(`[server] peer ${peerId} is left`);
     const index = this.roomModel.peerIds.indexOf(peerId);
     if (index <= -1) {
@@ -78,6 +89,8 @@ export class RoomController extends Controller {
 
     this.roomModel.peerIds.splice(index, 1);
     this.roomModel.count--;
+
+    this.roomDialogController.setCount(this.roomModel.count);
   }
 
   onRoomData({data, src}) {
@@ -132,6 +145,15 @@ export class RoomController extends Controller {
       cmd: 'start',
       peerIds: this.roomModel.peerIds,
       nextIdx: this.roomModel.idx,
+    });
+
+    this.roomDialogController.hide();
+  }
+
+  sendKick(peerId: string) {
+    this.room.send({
+      cmd: 'kick',
+      peerId,
     });
   }
 }

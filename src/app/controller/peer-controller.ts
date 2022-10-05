@@ -11,11 +11,15 @@ import {PeerModel} from '../model/peer-model';
 import {PLAYER_IDS} from '../env/game';
 import {PeerGameController} from './peer-game-controller';
 import {BoardController} from './board-controller';
+import {ErrorDialogController} from './error-dialog-controller';
+import {PeerDialogController} from './peer-dialog-controller';
 
 export class PeerController extends Controller {
   private peerModel: PeerModel;
   private peerGameController: PeerGameController;
+  private peerDialogController: PeerDialogController;
   private boardController: BoardController;
+  private errorDialogController: ErrorDialogController;
 
   private peer: Peer;
   private room: MeshRoom;
@@ -25,12 +29,15 @@ export class PeerController extends Controller {
   }
 
   init() {
-    event.on(EVENT_PEER_START, this.startClient, this);
+    event.on(EVENT_PEER_START, this.start, this);
     event.on(EVENT_PEER_SEND_PUT, this.sendPut, this)
   }
 
-  startClient(msg: EventClientStartMsg) {
-    const {roomId} = msg;
+  start({roomId, silence}: { roomId: string, silence: boolean }) {
+    this.peerModel.silence = silence;
+
+    this.peerDialogController.setStatus('Connecting to room...');
+    this.peerDialogController.show();
     this.joinRoom(roomId);
   }
 
@@ -48,14 +55,13 @@ export class PeerController extends Controller {
       });
 
       this.room.on("open", () => this.onRoomOpen());
-      // this.room.on('peerJoin', peerId => this.onJoin(peerId));
-      // this.room.on('peerLeave', peerId => this.onLeave(peerId));
       this.room.on('data', ({data, src}) => this.onReceive({data, src}));
     });
   }
 
   onRoomOpen() {
     console.log(`[client] ${this.peer.id} > join room`);
+    this.peerDialogController.setStatus('Waiting for game start...');
   }
 
   onReceive({data, src}) {
@@ -96,6 +102,8 @@ export class PeerController extends Controller {
     this.boardController.renderTurn();
     this.boardController.renderBattleAndPlayers();
     this.boardController.renderWinner();
+
+    this.peerDialogController.hide();
   }
 
   onReceivePutAllow({data, src}) {
@@ -121,12 +129,31 @@ export class PeerController extends Controller {
     this.boardController.renderWinner();
   }
 
+  onReceiveKick({data, src}) {
+    const {
+      peerId,
+    } = data;
+
+    if (peerId !== this.peer.id) {
+      return;
+    }
+
+    this.errorDialogController.setMessage('This room is full');
+    this.errorDialogController.show();
+  }
+
   send(data) {
     console.log(`[client] ${this.peer.id} > ${JSON.stringify(data)}`);
     this.room.send(data);
   }
 
-  sendPut({fromX, fromLevel, toX, toY, toLevel}: {fromX: number, fromLevel: number, toX: number, toY: number, toLevel: number}) {
+  sendPut({
+            fromX,
+            fromLevel,
+            toX,
+            toY,
+            toLevel
+          }: { fromX: number, fromLevel: number, toX: number, toY: number, toLevel: number }) {
     this.send({
       cmd: 'put',
       fromX,

@@ -9,19 +9,23 @@ import {CellTexture} from './texture/cell-texture';
 import {RoomModel} from './model/room-model';
 import {RoomController} from './controller/room-controller';
 import {PeerController} from './controller/peer-controller';
-import event from '../framework/event';
-import {EVENT_SERVER_START} from './env/event';
 import {RoomGameController} from './controller/room-game-controller';
 import {PeerGameController} from './controller/peer-game-controller';
+import {RoomDialogController} from './controller/room-dialog-controller';
+import {MainController} from './controller/main-controller';
+import {PeerDialogController} from './controller/peer-dialog-controller';
 
 export class GameApplication extends Application {
   private peerModel: PeerModel;
   private roomModel: RoomModel;
+  private mainController: MainController;
   private boardController: BoardController;
   private roomController: RoomController;
   private roomGameController: RoomGameController;
+  private roomDialogController: RoomDialogController;
   private peerController: PeerController;
   private peerGameController: PeerGameController;
+  private peerDialogController: PeerDialogController;
   private gameView: GameView;
   private storage: Storage;
   private circleTexture: CellTexture;
@@ -66,6 +70,9 @@ export class GameApplication extends Application {
 
     this.resizeView();
 
+    this.mainController = new MainController();
+    this.mainController.init();
+
     this.boardController = new BoardController();
     this.boardController.init();
 
@@ -75,14 +82,19 @@ export class GameApplication extends Application {
     this.roomGameController = new RoomGameController();
     this.roomGameController.init();
 
+    this.roomDialogController = new RoomDialogController();
+    this.roomDialogController.init();
+
     this.peerController = new PeerController();
     this.peerController.init();
 
     this.peerGameController = new PeerGameController();
     this.peerGameController.init();
 
-    // TODO: test code
-    event.emit(EVENT_SERVER_START);
+    this.peerDialogController = new PeerDialogController();
+    this.peerDialogController.init();
+
+    this.mainController.start();
   }
 
   public getViewHeight(viewWidth) {
