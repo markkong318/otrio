@@ -14,6 +14,14 @@ export class RoomDialogController extends Controller {
     this.roomDialogView.setUrl(url);
   }
 
+  showStart() {
+    this.roomDialogView.setStartVisible(true);
+  }
+
+  hideStart() {
+    this.roomDialogView.setStartVisible(false);
+  }
+
   show() {
     this.roomDialogView.visible = true;
   }

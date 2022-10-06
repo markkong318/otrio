@@ -74,10 +74,13 @@ export class RoomController extends Controller {
     this.roomModel.peerIds.push(peerId);
     this.roomModel.count++;
 
-    this.roomDialogController.setCount(this.roomModel.count);
+    if (this.roomModel.count > 0) {
+      this.roomDialogController.showStart();
+    } else {
+      this.roomDialogController.hideStart()
+    }
 
-    // TODO: test
-    // this.sendStart();
+    this.roomDialogController.setCount(this.roomModel.count);
   }
 
   onRoomPeerLeave(peerId: string) {
@@ -94,7 +97,7 @@ export class RoomController extends Controller {
   }
 
   onRoomData({data, src}) {
-    console.log(`[server] ${src}$ said ${JSON.stringify(data)}`);
+    console.log(`[server] ${src} > ${JSON.stringify(data)}`);
 
     const {cmd} = data;
     switch (cmd) {
@@ -122,6 +125,7 @@ export class RoomController extends Controller {
       winnerIdx = this.roomModel.idx;
     }
 
+    const idx = this.roomModel.idx;
     const nextIdx = this.roomGameController.nextTurn();
 
     this.room.send({
@@ -132,6 +136,7 @@ export class RoomController extends Controller {
       toX,
       toY,
       toLevel,
+      idx,
       nextIdx,
       winnerIdx,
       winnerPositions,

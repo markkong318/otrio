@@ -83,6 +83,7 @@ export class RoomDialogView extends View {
     this.start.style.fontFamily = 'lato';
     this.start.interactive = true;
     this.start.buttonMode = true;
+    this.start.visible = false;
     this.start.on('pointerup', () => event.emit(EVENT_SERVER_SEND_START), this)
     this.container.addChild(this.start);
 
@@ -124,6 +125,12 @@ export class RoomDialogView extends View {
       this.container.addChild(this.qrCode);
     });
   }
+
+  setStartVisible(flag: boolean) {
+    this.start.visible = flag;
+  }
+
+
 
   setCount(count: number) {
     this.status.text = `Joined guest: ${count}`;

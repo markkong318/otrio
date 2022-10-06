@@ -6,7 +6,10 @@ import {Size} from '../../framework/size';
 import {
   CELL_COLOR_EMPTY,
   CELL_COLOR_NONE,
-  CELL_COLOR_PLAYER_1, CELL_COLOR_PLAYER_2, CELL_COLOR_PLAYER_3, CELL_COLOR_PLAYER_4,
+  CELL_COLOR_PLAYER_1,
+  CELL_COLOR_PLAYER_2,
+  CELL_COLOR_PLAYER_3,
+  CELL_COLOR_PLAYER_4,
   CELL_LEVEL_1,
   CELL_LEVEL_2,
   CELL_LEVEL_3
@@ -15,6 +18,7 @@ import {PLAYER_1_ID, PLAYER_2_ID, PLAYER_3_ID, PLAYER_4_ID, PLAYER_NONE} from '.
 import event from '../../framework/event';
 import {EVENT_CELL_VIEW_MOVE, EVENT_CELL_VIEW_OUT, EVENT_CELL_VIEW_PUT} from '../env/event';
 import {MessageView} from './message-view';
+import {ControlView} from './control-view';
 
 export class BoardView extends View {
   private battleCellViews: CellView[][];
@@ -24,6 +28,7 @@ export class BoardView extends View {
   private playerRightCellViews: CellView[];
   private playerDownCellViews: CellView[][];
   private messageView: MessageView;
+  private controlView: ControlView;
   private maskView: PIXI.Sprite;
 
   private selectedX: number = -1;
@@ -36,6 +41,7 @@ export class BoardView extends View {
     this.initPlayerRight();
     this.initPlayerDown();
     this.initMessageView();
+    this.initControlView();
     this.initMaskView();
 
     event.on(EVENT_CELL_VIEW_MOVE, this.onCellViewMove, this);
@@ -132,6 +138,14 @@ export class BoardView extends View {
     this.messageView.y = this.playerDownCellViews[0][2].y + this.playerDownCellViews[0][2].height;
     this.messageView.init();
     this.addChild(this.messageView);
+  }
+
+  initControlView() {
+    this.controlView = new ControlView();
+    this.controlView.size = new Size(this.width, 40);
+    this.controlView.y = this.messageView.y + this.messageView.height;
+    this.controlView.init();
+    this.addChild(this.controlView);
   }
 
   initMaskView() {
@@ -292,7 +306,7 @@ export class BoardView extends View {
     return [-1, -1];
   }
 
-  onCellViewMove({view}: {view: CellView}) {
+  onCellViewMove({view}: { view: CellView }) {
     const [selectedX, selectedY] = this.getBattlePosition(view);
 
     if (this.selectedX == selectedX && this.selectedY == selectedY) {
@@ -309,7 +323,7 @@ export class BoardView extends View {
     }
   }
 
-  onCellViewOut({view}: {view: CellView}) {
+  onCellViewOut({view}: { view: CellView }) {
     this.onCellViewMove({view});
 
     for (let i = 0; i < this.battleCellViews.length; i++) {

@@ -61,7 +61,7 @@ export class BoardController extends Controller {
   }
 
   renderWinner() {
-    if (!this.peerModel.winnerIdx) {
+    if (!this.peerModel.winnerIdx !== undefined) {
       return;
     }
 

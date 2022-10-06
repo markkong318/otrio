@@ -3,7 +3,7 @@ import * as PIXI from 'pixi.js';
 
 export class MessageView extends View {
   private background: PIXI.Sprite;
-  private messageText: PIXI.Text;
+  private message: PIXI.Text;
 
   init() {
     this.background = new PIXI.Sprite(PIXI.Texture.WHITE);
@@ -12,17 +12,17 @@ export class MessageView extends View {
     this.background.tint = 0xc5a26d;
     this.addChild(this.background);
 
-    this.messageText = new PIXI.Text("Hello World!");
-    this.messageText.x = this.size.width / 2;
-    this.messageText.y = this.size.height / 2;
-    this.messageText.anchor.x = 0.5
-    this.messageText.anchor.y = 0.5
-    this.messageText.style.fontSize = "40px"
-    this.messageText.style.fill = "white";
-    this.addChild(this.messageText);
+    this.message = new PIXI.Text('Hello World!');
+    this.message.x = this.size.width / 2;
+    this.message.y = this.size.height / 2;
+    this.message.anchor.x = 0.5
+    this.message.anchor.y = 0.5
+    this.message.style.fontSize = '40px';
+    this.message.style.fill = 'white';
+    this.addChild(this.message);
   }
 
   setText(text: string) {
-    this.messageText.text = text;
+    this.message.text = text;
   }
 }

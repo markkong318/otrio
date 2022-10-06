@@ -15,6 +15,7 @@ export class PeerModel extends Model {
   public winnerPositions: number[][] = [];
 
   public silence: boolean = false;
+  public start: boolean = false;
 
   constructor() {
     super();

@@ -9,8 +9,6 @@ export class RoomModel extends Model {
   public peerIds: string[] = [];
   public idx: number = 0;
 
-  public start: boolean = false;
-
   constructor() {
     super();
   }

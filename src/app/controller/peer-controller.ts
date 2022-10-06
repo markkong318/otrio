@@ -6,7 +6,6 @@ import {
   EVENT_PEER_START,
   EVENT_PEER_SEND_PUT,
 } from '../env/event';
-import {EventClientStartMsg} from '../env/msg';
 import {PeerModel} from '../model/peer-model';
 import {PLAYER_IDS} from '../env/game';
 import {PeerGameController} from './peer-game-controller';
@@ -35,6 +34,7 @@ export class PeerController extends Controller {
 
   start({roomId, silence}: { roomId: string, silence: boolean }) {
     this.peerModel.silence = silence;
+    //TODO: silence to isHost
 
     this.peerDialogController.setStatus('Connecting to room...');
     this.peerDialogController.show();
@@ -55,6 +55,7 @@ export class PeerController extends Controller {
       });
 
       this.room.on("open", () => this.onRoomOpen());
+      this.room.on('peerLeave', peerId => this.onRoomPeerLeave(peerId));
       this.room.on('data', ({data, src}) => this.onReceive({data, src}));
     });
   }
@@ -64,8 +65,15 @@ export class PeerController extends Controller {
     this.peerDialogController.setStatus('Waiting for game start...');
   }
 
+  onRoomPeerLeave(peerId: string) {
+    if (this.peerModel.start && this.peerModel.peerIds.indexOf(peerId) !== -1) {
+      this.errorDialogController.setMessage('Player is left. Game over');
+      this.errorDialogController.show();
+    }
+  }
+
   onReceive({data, src}) {
-    console.log(`[client] ${this.peer.id} > ${src}$ said ${JSON.stringify(data)}`);
+    console.log(`[client] ${this.peer.id} > ${src} > ${JSON.stringify(data)}`);
 
     const {cmd} = data;
     switch (cmd) {
@@ -89,6 +97,7 @@ export class PeerController extends Controller {
       throw new Error('invalid peer idx');
     }
 
+    this.peerModel.start = true;
     this.peerModel.idx = idx;
     this.peerModel.nextIdx = nextIdx;
     this.peerModel.winnerIdx = undefined;
@@ -113,6 +122,7 @@ export class PeerController extends Controller {
       toX,
       toY,
       toLevel,
+      idx,
       nextIdx,
       winnerIdx,
       winnerPositions,
@@ -122,7 +132,7 @@ export class PeerController extends Controller {
     this.peerModel.winnerIdx = winnerIdx;
     this.peerModel.winnerPositions = [...winnerPositions];
 
-    this.peerGameController.put(nextIdx, fromX, fromLevel, toX, toY, toLevel);
+    this.peerGameController.put(idx, fromX, fromLevel, toX, toY, toLevel);
 
     this.boardController.renderTurn();
     this.boardController.renderBattleAndPlayers();
@@ -147,13 +157,7 @@ export class PeerController extends Controller {
     this.room.send(data);
   }
 
-  sendPut({
-            fromX,
-            fromLevel,
-            toX,
-            toY,
-            toLevel
-          }: { fromX: number, fromLevel: number, toX: number, toY: number, toLevel: number }) {
+  sendPut({fromX, fromLevel, toX, toY, toLevel}: { fromX: number, fromLevel: number, toX: number, toY: number, toLevel: number }) {
     this.send({
       cmd: 'put',
       fromX,
