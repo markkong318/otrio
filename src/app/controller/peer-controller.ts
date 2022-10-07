@@ -32,13 +32,14 @@ export class PeerController extends Controller {
     event.on(EVENT_PEER_SEND_PUT, this.sendPut, this)
   }
 
-  start({roomId, silence}: { roomId: string, silence: boolean }) {
-    this.peerModel.silence = silence;
-    //TODO: silence to isHost
+  start({roomId, host}: { roomId: string, host: boolean }) {
+    this.peerModel.host = host;
 
     this.peerDialogController.setStatus('Connecting to room...');
     this.peerDialogController.show();
     this.joinRoom(roomId);
+
+    this.boardController.renderControl();
   }
 
   joinRoom(roomId: string) {

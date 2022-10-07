@@ -59,7 +59,7 @@ export class RoomController extends Controller {
 
   onRoomOpen() {
     console.log(`[server] room ${this.room.name} is created`);
-    event.emit(EVENT_PEER_START, {roomId: this.room.name, silence: true});
+    event.emit(EVENT_PEER_START, {roomId: this.room.name, host: true});
 
     this.roomDialogController.setRoomId(this.room.name);
   }

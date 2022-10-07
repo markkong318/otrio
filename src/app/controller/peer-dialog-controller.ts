@@ -11,14 +11,14 @@ export class PeerDialogController extends Controller {
   }
 
   show() {
-    if (this.peerModel.silence) {
+    if (this.peerModel.host) {
       return;
     }
     this.peerDialogView.visible = true;
   }
 
   hide() {
-    if (this.peerModel.silence) {
+    if (this.peerModel.host) {
       return;
     }
     this.peerDialogView.visible = false;

@@ -14,6 +14,7 @@ import {PeerGameController} from './controller/peer-game-controller';
 import {RoomDialogController} from './controller/room-dialog-controller';
 import {MainController} from './controller/main-controller';
 import {PeerDialogController} from './controller/peer-dialog-controller';
+import {ErrorDialogController} from './controller/error-dialog-controller';
 
 export class GameApplication extends Application {
   private peerModel: PeerModel;
@@ -26,6 +27,7 @@ export class GameApplication extends Application {
   private peerController: PeerController;
   private peerGameController: PeerGameController;
   private peerDialogController: PeerDialogController;
+  private errorDialogController: ErrorDialogController;
   private gameView: GameView;
   private storage: Storage;
   private circleTexture: CellTexture;
@@ -93,6 +95,9 @@ export class GameApplication extends Application {
 
     this.peerDialogController = new PeerDialogController();
     this.peerDialogController.init();
+
+    this.errorDialogController = new ErrorDialogController();
+    this.errorDialogController.init();
 
     this.mainController.start();
   }

@@ -127,7 +127,7 @@ export class RoomDialogView extends View {
   }
 
   setStartVisible(flag: boolean) {
-    this.start.visible = flag;
+    this.start.visible = !!flag;
   }
 
 

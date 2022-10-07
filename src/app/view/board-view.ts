@@ -338,4 +338,8 @@ export class BoardView extends View {
   setMaskVisible(flag: boolean) {
     this.maskView.visible = !!flag;
   }
+
+  setControlVisible(flag: boolean) {
+    this.controlView.visible = !!flag;
+  }
 }

@@ -61,7 +61,8 @@ export class BoardController extends Controller {
   }
 
   renderWinner() {
-    if (!this.peerModel.winnerIdx !== undefined) {
+    if (this.peerModel.winnerIdx == undefined) {
+      this.boardView.renderWinnerPosition([]);
       return;
     }
 
@@ -71,9 +72,14 @@ export class BoardController extends Controller {
       this.messageView.setText('You lose!');
     }
 
-    this.boardView.setMaskVisible(false);
+    this.boardView.setMaskVisible(true);
 
     this.boardView.renderWinnerPosition(this.peerModel.winnerPositions);
+  }
+
+  renderControl() {
+    const host = this.peerModel.host;
+    this.boardView.setControlVisible(host);
   }
 
   onCellViewPut({view, x, y}: {view: CellView, x: number, y: number}) {
