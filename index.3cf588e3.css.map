@@ -1,0 +1,1 @@
+{"mappings":"AAAA","sources":["src/assets/fonts/lato/style.css"],"sourcesContent":["@font-face {\n    font-family: 'lato';\n    font-style: normal;\n    font-weight: normal;\n    src: local('lato'), url('./lato.ttf') format('truetype');\n}\n"],"names":[],"version":3,"file":"index.3cf588e3.css.map"}
