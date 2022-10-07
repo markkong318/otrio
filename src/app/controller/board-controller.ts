@@ -1,12 +1,12 @@
 import {Controller} from '../../framework/controller';
 import {PeerModel} from '../model/peer-model';
-import {BoardView} from '../view/board-view';
+import {BoardView} from '../view/game/board-view';
 import event from '../../framework/event';
 import {EVENT_PEER_SEND_PUT, EVENT_RENDER_BATTLE_AND_PLAYERS, EVENT_CELL_VIEW_PUT} from '../env/event';
 import {PLAYER_NONE} from '../env/game';
 import {CELL_COLOR_NONE, CELL_COLOR_PLAYERS} from '../env/cell';
-import {CellView} from '../view/cell-view';
-import {MessageView} from '../view/message-view';
+import {CellView} from '../view/game/board/cell-view';
+import {MessageView} from '../view/game/board/message-view';
 
 export class BoardController extends Controller {
   private peerModel: PeerModel;

@@ -4,6 +4,8 @@ export class PeerModel extends Model {
   public playerCells: number[][][];
   public battleCells: number[][][];
 
+  public boardId: string;
+
   public idx: number = -1
   public playerId: number = 0;
   public count: number = -1;

@@ -1,7 +1,7 @@
 import {Controller} from '../../framework/controller';
 import queryString from '../storage/query-string';
 import event from '../../framework/event';
-import {EVENT_PEER_START, EVENT_SERVER_START} from '../env/event';
+import {EVENT_PEER_START, EVENT_ROOM_START} from '../env/event';
 
 export class MainController extends Controller {
   start() {
@@ -10,6 +10,6 @@ export class MainController extends Controller {
       event.emit(EVENT_PEER_START, { roomId });
       return;
     }
-    event.emit(EVENT_SERVER_START);
+    event.emit(EVENT_ROOM_START);
   }
 }

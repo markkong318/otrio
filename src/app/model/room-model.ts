@@ -4,6 +4,8 @@ export class RoomModel extends Model {
   public playerCells: number[][][];
   public battleCells: number[][][];
 
+  public boardId: string;
+
   public count: number = 0;
 
   public peerIds: string[] = [];

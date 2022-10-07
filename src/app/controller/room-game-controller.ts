@@ -57,6 +57,8 @@ export class RoomGameController extends Controller {
         }
       }
     }
+
+    this.roomModel.boardId = Math.random().toString(36).slice(-5);
   }
 
   checkFinish() {

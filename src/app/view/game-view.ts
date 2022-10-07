@@ -2,7 +2,7 @@ import * as PIXI from 'pixi.js';
 
 import {View} from '../../framework/view';
 import {Size} from '../../framework/size';
-import {BoardView} from './board-view';
+import {BoardView} from './game/board-view';
 import {RoomDialogView} from './dialog/room-dialog-view';
 import {PeerDialogView} from './dialog/peer-dialog-view';
 import {ErrorDialogView} from './dialog/error-dialog-view';

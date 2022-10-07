@@ -1,8 +1,8 @@
 import * as PIXI from 'pixi.js';
 
-import {View} from '../../framework/view';
-import {CellView} from './cell-view';
-import {Size} from '../../framework/size';
+import {View} from '../../../framework/view';
+import {CellView} from './board/cell-view';
+import {Size} from '../../../framework/size';
 import {
   CELL_COLOR_EMPTY,
   CELL_COLOR_NONE,
@@ -13,12 +13,12 @@ import {
   CELL_LEVEL_1,
   CELL_LEVEL_2,
   CELL_LEVEL_3
-} from '../env/cell';
-import {PLAYER_1_ID, PLAYER_2_ID, PLAYER_3_ID, PLAYER_4_ID, PLAYER_NONE} from '../env/game';
-import event from '../../framework/event';
-import {EVENT_CELL_VIEW_MOVE, EVENT_CELL_VIEW_OUT, EVENT_CELL_VIEW_PUT} from '../env/event';
-import {MessageView} from './message-view';
-import {ControlView} from './control-view';
+} from '../../env/cell';
+import {PLAYER_1_ID, PLAYER_2_ID, PLAYER_3_ID, PLAYER_4_ID, PLAYER_NONE} from '../../env/game';
+import event from '../../../framework/event';
+import {EVENT_CELL_VIEW_MOVE, EVENT_CELL_VIEW_OUT, EVENT_CELL_VIEW_PUT} from '../../env/event';
+import {MessageView} from './board/message-view';
+import {ControlView} from './board/control-view';
 
 export class BoardView extends View {
   private battleCellViews: CellView[][];

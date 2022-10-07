@@ -5,7 +5,7 @@ import {Controller} from '../../framework/controller';
 import {RoomModel} from '../model/room-model';
 import {API_KEY} from '../env/server';
 import event from '../../framework/event';
-import {EVENT_PEER_START, EVENT_SERVER_SEND_START, EVENT_SERVER_START} from '../env/event';
+import {EVENT_PEER_START, EVENT_ROOM_SEND_START, EVENT_ROOM_START} from '../env/event';
 import {RoomGameController} from './room-game-controller';
 import {RoomDialogController} from './room-dialog-controller';
 
@@ -22,8 +22,8 @@ export class RoomController extends Controller {
   }
 
   init() {
-    event.on(EVENT_SERVER_START, () => this.start());
-    event.on(EVENT_SERVER_SEND_START, () => this.sendStart());
+    event.on(EVENT_ROOM_START, () => this.start());
+    event.on(EVENT_ROOM_SEND_START, () => this.sendStart());
   }
 
   isAdmin() {
@@ -99,7 +99,13 @@ export class RoomController extends Controller {
   onRoomData({data, src}) {
     console.log(`[server] ${src} > ${JSON.stringify(data)}`);
 
-    const {cmd} = data;
+    const {cmd, boardId} = data;
+
+    if (boardId !== this.roomModel.boardId) {
+      console.log(`[server] board id check is failed. Actual: ${boardId}. Expect: ${this.roomModel.boardId}`);
+      return;
+    }
+
     switch (cmd) {
       case 'put':
         this.onReceivePut({data, src});
@@ -128,7 +134,7 @@ export class RoomController extends Controller {
     const idx = this.roomModel.idx;
     const nextIdx = this.roomGameController.nextTurn();
 
-    this.room.send({
+    this.send({
       cmd: 'allow-put',
       peerId: src,
       fromX,
@@ -143,10 +149,20 @@ export class RoomController extends Controller {
     });
   }
 
+  send(data) {
+    data = {
+      ...data,
+      boardId: this.roomModel.boardId,
+    }
+
+    console.log(`[server] ${this.peer.id} > ${JSON.stringify(data)}`);
+    this.room.send(data);
+  }
+
   sendStart() {
     this.roomGameController.reset();
 
-    this.room.send({
+    this.send({
       cmd: 'start',
       peerIds: this.roomModel.peerIds,
       nextIdx: this.roomModel.idx,
@@ -156,7 +172,7 @@ export class RoomController extends Controller {
   }
 
   sendKick(peerId: string) {
-    this.room.send({
+    this.send({
       cmd: 'kick',
       peerId,
     });

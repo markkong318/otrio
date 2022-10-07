@@ -1,4 +1,4 @@
-import {View} from '../../framework/view';
+import {View} from '../../../../framework/view';
 import * as PIXI from 'pixi.js';
 
 export class MessageView extends View {

@@ -1,7 +1,7 @@
-import {View} from '../../framework/view';
+import {View} from '../../../../framework/view';
 import * as PIXI from 'pixi.js';
-import event from '../../framework/event';
-import {EVENT_SERVER_SEND_START} from '../env/event';
+import event from '../../../../framework/event';
+import {EVENT_ROOM_SEND_START} from '../../../env/event';
 
 export class ControlView extends View {
   private background: PIXI.Sprite;
@@ -22,7 +22,7 @@ export class ControlView extends View {
     this.restart.style.fill = 'black';
     this.restart.interactive = true;
     this.restart.buttonMode = true;
-    this.restart.on('pointerup', () => event.emit(EVENT_SERVER_SEND_START), this)
+    this.restart.on('pointerup', () => event.emit(EVENT_ROOM_SEND_START), this)
     this.addChild(this.restart);
   }
 }

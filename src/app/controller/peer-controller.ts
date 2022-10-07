@@ -76,7 +76,13 @@ export class PeerController extends Controller {
   onReceive({data, src}) {
     console.log(`[client] ${this.peer.id} > ${src} > ${JSON.stringify(data)}`);
 
-    const {cmd} = data;
+    const {cmd, boardId} = data;
+
+    if (cmd !== 'start' && boardId !== this.peerModel.boardId) {
+      console.log(`[client] board id check is failed. Actual: ${boardId}. Expect: ${this.peerModel.boardId}`);
+      return;
+    }
+
     switch (cmd) {
       case 'start':
         this.onReceiveStart({data, src});
@@ -84,11 +90,15 @@ export class PeerController extends Controller {
       case 'allow-put':
         this.onReceivePutAllow({data, src});
         break;
+      case 'kick':
+        this.onReceiveKick({data, src});
+        break;
     }
   }
 
   onReceiveStart({data, src}) {
     const {
+      boardId,
       peerIds,
       nextIdx,
     } = data;
@@ -98,6 +108,7 @@ export class PeerController extends Controller {
       throw new Error('invalid peer idx');
     }
 
+    this.peerModel.boardId = boardId;
     this.peerModel.start = true;
     this.peerModel.idx = idx;
     this.peerModel.nextIdx = nextIdx;
@@ -154,6 +165,11 @@ export class PeerController extends Controller {
   }
 
   send(data) {
+    data = {
+      ...data,
+      boardId: this.peerModel.boardId,
+    }
+
     console.log(`[client] ${this.peer.id} > ${JSON.stringify(data)}`);
     this.room.send(data);
   }

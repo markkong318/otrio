@@ -1,11 +1,11 @@
 import * as PIXI from 'pixi.js';
 
-import {View} from '../../framework/view';
-import bottle from '../../framework/bottle';
-import {CellTexture} from '../texture/cell-texture';
-import {CELL_LEVEL_1, CELL_LEVEL_2, CELL_LEVEL_3} from '../env/cell';
-import event from '../../framework/event';
-import {EVENT_CELL_VIEW_MOVE, EVENT_CELL_VIEW_OUT} from '../env/event';
+import {View} from '../../../../framework/view';
+import bottle from '../../../../framework/bottle';
+import {CellTexture} from '../../../texture/cell-texture';
+import {CELL_LEVEL_1, CELL_LEVEL_2, CELL_LEVEL_3} from '../../../env/cell';
+import event from '../../../../framework/event';
+import {EVENT_CELL_VIEW_MOVE, EVENT_CELL_VIEW_OUT} from '../../../env/event';
 
 export class CellView extends View {
   private background: PIXI.Sprite;

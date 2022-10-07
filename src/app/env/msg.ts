@@ -1,4 +1,4 @@
-import {CellView} from '../view/cell-view';
+import {CellView} from '../view/game/board/cell-view';
 
 export class EventUpdateBattleMsg {
   public view: CellView;
