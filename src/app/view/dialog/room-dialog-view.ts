@@ -41,7 +41,7 @@ export class RoomDialogView extends View {
 
     this.description = new PIXI.Text('Room is created\n Please share QR code or click');
     this.description.x = this.width / 2;
-    this.description.y = 100;
+    this.description.y = 70;
     this.description.anchor.x = 0.5;
     this.description.style.fontSize = '26px';
     this.description.style.fill = 'black';
@@ -51,7 +51,7 @@ export class RoomDialogView extends View {
 
     this.here = new PIXI.Text(navigator.share ? '>>HERE<<' : '>>COPY<<');
     this.here.x = this.width / 2;
-    this.here.y = 160;
+    this.here.y = 130;
     this.here.anchor.x = 0.5;
     this.here.style.fontSize = '30px';
     this.here.style.fill = 'black';
@@ -64,7 +64,7 @@ export class RoomDialogView extends View {
 
     this.status = new PIXI.Text('Joined guest: 0');
     this.status.x = this.width / 2;
-    this.status.y = 630;
+    this.status.y = 600;
     this.status.anchor.x = 0.5;
     this.status.style.fontSize = '26px';
     this.status.style.fill = 'black';
@@ -74,7 +74,7 @@ export class RoomDialogView extends View {
 
     this.start = new PIXI.Text('>>START<<');
     this.start.x = this.width / 2;
-    this.start.y = 680;
+    this.start.y = 650;
     this.start.anchor.x = 0.5;
     this.start.anchor.y = 0.5;
     this.start.style.fontSize = '30px';
@@ -117,7 +117,7 @@ export class RoomDialogView extends View {
 
       this.qrCode = new PIXI.Sprite(texture);
       this.qrCode.x = this.width / 2;
-      this.qrCode.y = 400;
+      this.qrCode.y = 370;
       this.qrCode.anchor.x = 0.5;
       this.qrCode.anchor.y = 0.5;
       this.qrCode.width = this.width - 100
