@@ -1,9 +1,10 @@
 import {Controller} from '../../framework/controller';
 import {RoomModel} from '../model/room-model';
 import {PLAYER_IDS, PLAYER_NONE} from '../env/game';
+import bottle from '../../framework/bottle';
 
 export class RoomGameController extends Controller {
-  private roomModel: RoomModel;
+  private roomModel: RoomModel= bottle.inject(RoomModel);
 
   constructor() {
     super();

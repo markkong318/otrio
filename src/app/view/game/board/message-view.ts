@@ -12,7 +12,7 @@ export class MessageView extends View {
     this.background.tint = 0xc5a26d;
     this.addChild(this.background);
 
-    this.message = new PIXI.Text('Hello World!');
+    this.message = new PIXI.Text('Initializing...');
     this.message.x = this.size.width / 2;
     this.message.y = this.size.height / 2;
     this.message.anchor.x = 0.5

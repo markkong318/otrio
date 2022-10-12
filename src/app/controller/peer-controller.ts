@@ -12,13 +12,14 @@ import {PeerGameController} from './peer-game-controller';
 import {BoardController} from './board-controller';
 import {ErrorDialogController} from './error-dialog-controller';
 import {PeerDialogController} from './peer-dialog-controller';
+import bottle from '../../framework/bottle';
 
 export class PeerController extends Controller {
-  private peerModel: PeerModel;
-  private peerGameController: PeerGameController;
-  private peerDialogController: PeerDialogController;
-  private boardController: BoardController;
-  private errorDialogController: ErrorDialogController;
+  private peerModel: PeerModel = bottle.inject(PeerModel);
+  private peerGameController: PeerGameController = bottle.inject(PeerGameController);
+  private peerDialogController: PeerDialogController = bottle.inject(PeerDialogController);
+  private boardController: BoardController = bottle.inject(BoardController);
+  private errorDialogController: ErrorDialogController = bottle.inject(ErrorDialogController);
 
   private peer: Peer;
   private room: MeshRoom;

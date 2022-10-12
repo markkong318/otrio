@@ -1,9 +1,10 @@
 import {Controller} from '../../framework/controller';
 import {PeerModel} from '../model/peer-model';
 import {PLAYER_IDS, PLAYER_NONE} from '../env/game';
+import bottle from '../../framework/bottle';
 
 export class PeerGameController extends Controller {
-  private peerModel: PeerModel;
+  private peerModel: PeerModel = bottle.inject(PeerModel);
 
   constructor() {
     super();

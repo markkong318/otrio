@@ -8,11 +8,12 @@ import event from '../../framework/event';
 import {EVENT_PEER_START, EVENT_ROOM_SEND_START, EVENT_ROOM_START} from '../env/event';
 import {RoomGameController} from './room-game-controller';
 import {RoomDialogController} from './room-dialog-controller';
+import bottle from '../../framework/bottle';
 
 export class RoomController extends Controller {
-  private roomModel: RoomModel;
-  private roomGameController: RoomGameController;
-  private roomDialogController: RoomDialogController;
+  private roomModel: RoomModel = bottle.inject(RoomModel);
+  private roomGameController: RoomGameController = bottle.inject(RoomGameController);
+  private roomDialogController: RoomDialogController = bottle.inject(RoomDialogController);
 
   private peer: Peer;
   private room: MeshRoom;

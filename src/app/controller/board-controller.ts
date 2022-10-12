@@ -7,11 +7,12 @@ import {PLAYER_NONE} from '../env/game';
 import {CELL_COLOR_NONE, CELL_COLOR_PLAYERS} from '../env/cell';
 import {CellView} from '../view/game/board/cell-view';
 import {MessageView} from '../view/game/board/message-view';
+import bottle from '../../framework/bottle';
 
 export class BoardController extends Controller {
-  private peerModel: PeerModel;
-  private boardView: BoardView;
-  private messageView: MessageView;
+  private peerModel: PeerModel = bottle.inject(PeerModel);
+  private boardView: BoardView = bottle.inject(BoardView);
+  private messageView: MessageView = bottle.inject(MessageView);
 
   constructor() {
     super();

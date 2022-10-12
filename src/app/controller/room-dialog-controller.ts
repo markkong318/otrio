@@ -1,9 +1,10 @@
 import {Controller} from '../../framework/controller';
 import {RoomDialogView} from '../view/dialog/room-dialog-view';
+import bottle from '../../framework/bottle';
 
 
 export class RoomDialogController extends Controller {
-  private roomDialogView: RoomDialogView;
+  private roomDialogView: RoomDialogView = bottle.inject(RoomDialogView);
 
   setCount(count: number) {
     this.roomDialogView.setCount(count);

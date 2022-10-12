@@ -26,10 +26,20 @@ export default new class Bottle {
   }
 
   set(key, vale) {
+    console.log('[bottle] set ' + key);
+
     this.map.set(key,vale);
   }
 
   get(key) {
+    console.log('[bottle] get ' + key);
+
     return this.map.get(key);
+  }
+
+  inject(srcClass): any {
+    return () => {
+      return this.getObject(srcClass);
+    }
   }
 }()
