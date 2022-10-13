@@ -2,7 +2,7 @@ import {Controller} from '../../framework/controller';
 import {PeerModel} from '../model/peer-model';
 import {BoardView} from '../view/game/board-view';
 import event from '../../framework/event';
-import {EVENT_PEER_SEND_PUT, EVENT_RENDER_BATTLE_AND_PLAYERS, EVENT_CELL_VIEW_PUT} from '../env/event';
+import {EVENT_CELL_VIEW_PUT, EVENT_PEER_SEND_PUT, EVENT_RENDER_BATTLE_AND_PLAYERS} from '../env/event';
 import {PLAYER_NONE} from '../env/game';
 import {CELL_COLOR_NONE, CELL_COLOR_PLAYERS} from '../env/cell';
 import {CellView} from '../view/game/board/cell-view';

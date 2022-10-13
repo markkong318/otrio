@@ -2,10 +2,7 @@ import {Controller} from '../../framework/controller';
 import Peer, {MeshRoom} from 'skyway-js';
 import {API_KEY} from '../env/server';
 import event from '../../framework/event';
-import {
-  EVENT_PEER_START,
-  EVENT_PEER_SEND_PUT,
-} from '../env/event';
+import {EVENT_PEER_SEND_PUT, EVENT_PEER_START,} from '../env/event';
 import {PeerModel} from '../model/peer-model';
 import {PLAYER_IDS} from '../env/game';
 import {PeerGameController} from './peer-game-controller';
