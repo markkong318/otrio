@@ -140,6 +140,7 @@ export class CellView extends View {
 
     this.isDragged = true;
     this.dragPoint = point;
+    this.zIndex = 1;
   }
 
   onPointerMove(evt: PIXI.InteractionEvent) {
@@ -162,7 +163,11 @@ export class CellView extends View {
   }
 
   onPointerOut(evt: PIXI.InteractionEvent) {
-    console.log('onPointerOut');
+    if (!this.isDragged) {
+      return;
+    }
+
+    this.zIndex = 0;
     this.isDragged = false;
 
     event.emit(EVENT_CELL_VIEW_OUT, {view: this});

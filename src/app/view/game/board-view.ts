@@ -35,6 +35,8 @@ export class BoardView extends View {
   private selectedY: number = -1;
 
   public init() {
+    this.sortableChildren = true;
+
     this.initBattle();
     this.initPlayerLeft();
     this.initPlayerUp();
@@ -155,6 +157,7 @@ export class BoardView extends View {
     this.maskView.x = this.playerDownCellViews[0][0].x;
     this.maskView.y = this.playerDownCellViews[0][0].y;
     this.maskView.interactive = true;
+    this.maskView.zIndex = 2;
     this.addChild(this.maskView);
   }
 

@@ -1,5 +1,3 @@
 {
-  "reject": [
-    "pixi.js2"
-  ]
+  "reject": []
 }
