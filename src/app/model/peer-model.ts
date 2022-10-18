@@ -18,6 +18,7 @@ export class PeerModel extends Model {
 
   public host: boolean = false;
   public start: boolean = false;
+  public login: boolean = false;
 
   constructor() {
     super();

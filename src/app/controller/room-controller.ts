@@ -3,7 +3,7 @@ import {v4 as uuidv4} from 'uuid';
 
 import {Controller} from '../../framework/controller';
 import {RoomModel} from '../model/room-model';
-import {API_KEY} from '../env/server';
+import {API_KEY} from '../env/sky-way';
 import event from '../../framework/event';
 import {EVENT_PEER_START, EVENT_ROOM_SEND_START, EVENT_ROOM_START} from '../env/event';
 import {RoomGameController} from './room-game-controller';
@@ -45,7 +45,7 @@ export class RoomController extends Controller {
     });
 
     this.peer.on('open', () => {
-      console.log('server peer id:' + this.peer.id);
+      console.log('room peer id:' + this.peer.id);
 
       this.room = this.peer.joinRoom(roomId, {
         mode: 'mesh',
@@ -59,7 +59,7 @@ export class RoomController extends Controller {
   }
 
   onRoomOpen() {
-    console.log(`[server] room ${this.room.name} is created`);
+    console.log(`[room] room ${this.room.name} is created`);
     event.emit(EVENT_PEER_START, {roomId: this.room.name, host: true});
 
     this.roomDialogController.setRoomId(this.room.name);
@@ -71,7 +71,7 @@ export class RoomController extends Controller {
       return;
     }
 
-    console.log(`[server] peer ${peerId} is joined`);
+    console.log(`[room] peer ${peerId} is joined`);
     this.roomModel.peerIds.push(peerId);
     this.roomModel.count++;
 
@@ -82,10 +82,12 @@ export class RoomController extends Controller {
     }
 
     this.roomDialogController.setCount(this.roomModel.count);
+
+    this.sendHi(peerId);
   }
 
   onRoomPeerLeave(peerId: string) {
-    console.log(`[server] peer ${peerId} is left`);
+    console.log(`[room] peer ${peerId} is left`);
     const index = this.roomModel.peerIds.indexOf(peerId);
     if (index <= -1) {
       return;
@@ -98,12 +100,12 @@ export class RoomController extends Controller {
   }
 
   onRoomData({data, src}) {
-    console.log(`[server] ${src} > ${JSON.stringify(data)}`);
+    console.log(`[room] ${src} says ${JSON.stringify(data)}`);
 
     const {cmd, boardId} = data;
 
     if (boardId !== this.roomModel.boardId) {
-      console.log(`[server] board id check is failed. Actual: ${boardId}. Expect: ${this.roomModel.boardId}`);
+      console.log(`[room] board id check is failed. Actual: ${boardId}. Expect: ${this.roomModel.boardId}`);
       return;
     }
 
@@ -156,7 +158,7 @@ export class RoomController extends Controller {
       boardId: this.roomModel.boardId,
     }
 
-    console.log(`[server] ${this.peer.id} > ${JSON.stringify(data)}`);
+    console.log(`[room] ${this.peer.id} says ${JSON.stringify(data)}`);
     this.room.send(data);
   }
 
@@ -175,6 +177,13 @@ export class RoomController extends Controller {
   sendKick(peerId: string) {
     this.send({
       cmd: 'kick',
+      peerId,
+    });
+  }
+
+  sendHi(peerId: string) {
+    this.send({
+      cmd: 'hi',
       peerId,
     });
   }

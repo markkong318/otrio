@@ -14,7 +14,6 @@ declare global {
 var font = new FontFaceObserver('lato-light')
 font.load()
   .then(() => (new FontFaceObserver('lato')).load())
-  .then(() => (new FontFaceObserver('gravity')).load())
   .then(() => {
     window.PIXI = PIXI;
 

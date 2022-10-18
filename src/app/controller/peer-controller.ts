@@ -1,6 +1,6 @@
 import {Controller} from '../../framework/controller';
 import Peer, {MeshRoom} from 'skyway-js';
-import {API_KEY} from '../env/server';
+import {API_KEY} from '../env/sky-way';
 import event from '../../framework/event';
 import {EVENT_PEER_SEND_PUT, EVENT_PEER_START,} from '../env/event';
 import {PeerModel} from '../model/peer-model';
@@ -47,7 +47,7 @@ export class PeerController extends Controller {
     });
 
     this.peer.on('open', () => {
-      console.log('client peer id:' + this.peer.id);
+      console.log('peer id:' + this.peer.id);
 
       this.room = this.peer.joinRoom(roomId, {
         mode: 'mesh',
@@ -56,11 +56,18 @@ export class PeerController extends Controller {
       this.room.on("open", () => this.onRoomOpen());
       this.room.on('peerLeave', peerId => this.onRoomPeerLeave(peerId));
       this.room.on('data', ({data, src}) => this.onReceive({data, src}));
+
+      setTimeout(() => {
+        if (this.peerModel.login) {
+         return;
+        }
+        this.peerDialogController.setStatus('Timeout. This room may be closed');
+      }, 5000)
     });
   }
 
   onRoomOpen() {
-    console.log(`[client] ${this.peer.id} > join room`);
+    console.log(`[peer] ${this.peer.id} joins room`);
     this.peerDialogController.setStatus('Waiting for game start...');
   }
 
@@ -72,12 +79,12 @@ export class PeerController extends Controller {
   }
 
   onReceive({data, src}) {
-    console.log(`[client] ${this.peer.id} > ${src} > ${JSON.stringify(data)}`);
+    console.log(`[peer] ${this.peer.id} to ${src} says ${JSON.stringify(data)}`);
 
     const {cmd, boardId} = data;
 
     if (cmd !== 'start' && boardId !== this.peerModel.boardId) {
-      console.log(`[client] board id check is failed. Actual: ${boardId}. Expect: ${this.peerModel.boardId}`);
+      console.log(`[peer] board id check is failed. Actual: ${boardId}. Expect: ${this.peerModel.boardId}`);
       return;
     }
 
@@ -90,6 +97,9 @@ export class PeerController extends Controller {
         break;
       case 'kick':
         this.onReceiveKick({data, src});
+        break;
+      case 'hi':
+        this.onReceiveHi({data, src});
         break;
     }
   }
@@ -108,6 +118,7 @@ export class PeerController extends Controller {
 
     this.peerModel.boardId = boardId;
     this.peerModel.start = true;
+    this.peerModel.login = true;
     this.peerModel.idx = idx;
     this.peerModel.nextIdx = nextIdx;
     this.peerModel.winnerIdx = undefined;
@@ -162,13 +173,25 @@ export class PeerController extends Controller {
     this.errorDialogController.show();
   }
 
+  onReceiveHi({data, src}) {
+    const {
+      peerId,
+    } = data;
+
+    if (peerId !== this.peer.id) {
+      return;
+    }
+
+    this.peerModel.login = true;
+  }
+
   send(data) {
     data = {
       ...data,
       boardId: this.peerModel.boardId,
     }
 
-    console.log(`[client] ${this.peer.id} > ${JSON.stringify(data)}`);
+    console.log(`[peer] ${this.peer.id} says ${JSON.stringify(data)}`);
     this.room.send(data);
   }
 
