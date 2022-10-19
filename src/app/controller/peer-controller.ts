@@ -1,7 +1,7 @@
 import {Controller} from '../../framework/controller';
 import Peer, {MeshRoom} from 'skyway-js';
 import {API_KEY} from '../env/sky-way';
-import event from '../../framework/event';
+import rocket from '../../framework/rocket';
 import {EVENT_PEER_SEND_PUT, EVENT_PEER_START,} from '../env/event';
 import {PeerModel} from '../model/peer-model';
 import {PLAYER_IDS} from '../env/game';
@@ -26,8 +26,8 @@ export class PeerController extends Controller {
   }
 
   init() {
-    event.on(EVENT_PEER_START, this.start, this);
-    event.on(EVENT_PEER_SEND_PUT, this.sendPut, this)
+    rocket.on(EVENT_PEER_START, this.start, this);
+    rocket.on(EVENT_PEER_SEND_PUT, this.sendPut, this)
   }
 
   start({roomId, host}: { roomId: string, host: boolean }) {

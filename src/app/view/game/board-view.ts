@@ -15,7 +15,7 @@ import {
   CELL_LEVEL_3
 } from '../../env/cell';
 import {PLAYER_1_ID, PLAYER_2_ID, PLAYER_3_ID, PLAYER_4_ID, PLAYER_NONE} from '../../env/game';
-import event from '../../../framework/event';
+import rocket from '../../../framework/rocket';
 import {EVENT_CELL_VIEW_MOVE, EVENT_CELL_VIEW_OUT, EVENT_CELL_VIEW_PUT} from '../../env/event';
 import {MessageView} from './board/message-view';
 import {ControlView} from './board/control-view';
@@ -46,8 +46,8 @@ export class BoardView extends View {
     this.initControlView();
     this.initMaskView();
 
-    event.on(EVENT_CELL_VIEW_MOVE, this.onCellViewMove, this);
-    event.on(EVENT_CELL_VIEW_OUT, this.onCellViewOut, this);
+    rocket.on(EVENT_CELL_VIEW_MOVE, this.onCellViewMove, this);
+    rocket.on(EVENT_CELL_VIEW_OUT, this.onCellViewOut, this);
   }
 
   initBattle() {
@@ -335,7 +335,7 @@ export class BoardView extends View {
       }
     }
 
-    event.emit(EVENT_CELL_VIEW_PUT, {view, x: this.selectedX, y: this.selectedY});
+    rocket.emit(EVENT_CELL_VIEW_PUT, {view, x: this.selectedX, y: this.selectedY});
   }
 
   setMaskVisible(flag: boolean) {

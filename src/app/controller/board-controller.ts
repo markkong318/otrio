@@ -1,7 +1,7 @@
 import {Controller} from '../../framework/controller';
 import {PeerModel} from '../model/peer-model';
 import {BoardView} from '../view/game/board-view';
-import event from '../../framework/event';
+import rocket from '../../framework/rocket';
 import {EVENT_CELL_VIEW_PUT, EVENT_PEER_SEND_PUT, EVENT_RENDER_BATTLE_AND_PLAYERS} from '../env/event';
 import {PLAYER_NONE} from '../env/game';
 import {CELL_COLOR_NONE, CELL_COLOR_PLAYERS} from '../env/cell';
@@ -19,8 +19,8 @@ export class BoardController extends Controller {
   }
 
   init() {
-    event.on(EVENT_RENDER_BATTLE_AND_PLAYERS, this.renderBattleAndPlayers, this);
-    event.on(EVENT_CELL_VIEW_PUT, this.onCellViewPut, this);
+    rocket.on(EVENT_RENDER_BATTLE_AND_PLAYERS, this.renderBattleAndPlayers, this);
+    rocket.on(EVENT_CELL_VIEW_PUT, this.onCellViewPut, this);
   }
 
   renderPlayer({peerId}) {
@@ -102,7 +102,7 @@ export class BoardController extends Controller {
     view.setMovable(false);
     view.setColor(level, CELL_COLOR_NONE);
 
-    event.emit(EVENT_PEER_SEND_PUT, {
+    rocket.emit(EVENT_PEER_SEND_PUT, {
       fromX: view.getIdx(),
       fromLevel: view.getLevel(),
       toX: x,

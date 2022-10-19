@@ -2,7 +2,7 @@ import * as PIXI from 'pixi.js';
 import QRCode from 'qrcode';
 
 import {View} from '../../../framework/view';
-import event from '../../../framework/event';
+import rocket from '../../../framework/rocket';
 import {EVENT_ROOM_SEND_START} from '../../env/event';
 
 export class RoomDialogView extends View {
@@ -84,7 +84,7 @@ export class RoomDialogView extends View {
     this.start.interactive = true;
     this.start.buttonMode = true;
     this.start.visible = false;
-    this.start.on('pointerup', () => event.emit(EVENT_ROOM_SEND_START), this)
+    this.start.on('pointerup', () => rocket.emit(EVENT_ROOM_SEND_START), this)
     this.container.addChild(this.start);
 
     this.container.y = (this.size.height - this.container.height) / 2;

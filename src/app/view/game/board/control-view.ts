@@ -1,6 +1,6 @@
 import {View} from '../../../../framework/view';
 import * as PIXI from 'pixi.js';
-import event from '../../../../framework/event';
+import rocket from '../../../../framework/rocket';
 import {EVENT_ROOM_SEND_START} from '../../../env/event';
 
 export class ControlView extends View {
@@ -22,7 +22,7 @@ export class ControlView extends View {
     this.restart.style.fill = 'black';
     this.restart.interactive = true;
     this.restart.buttonMode = true;
-    this.restart.on('pointerup', () => event.emit(EVENT_ROOM_SEND_START), this)
+    this.restart.on('pointerup', () => rocket.emit(EVENT_ROOM_SEND_START), this)
     this.addChild(this.restart);
   }
 }

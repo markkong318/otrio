@@ -4,7 +4,7 @@ import {View} from '../../../../framework/view';
 import bottle from '../../../../framework/bottle';
 import {CellTexture} from '../../../texture/cell-texture';
 import {CELL_LEVEL_1, CELL_LEVEL_2, CELL_LEVEL_3} from '../../../env/cell';
-import event from '../../../../framework/event';
+import rocket from '../../../../framework/rocket';
 import {EVENT_CELL_VIEW_MOVE, EVENT_CELL_VIEW_OUT} from '../../../env/event';
 
 export class CellView extends View {
@@ -159,7 +159,7 @@ export class CellView extends View {
     this.position.x = point.x - this.dragPoint.x;
     this.position.y = point.y - this.dragPoint.y;
 
-    event.emit(EVENT_CELL_VIEW_MOVE, {view: this});
+    rocket.emit(EVENT_CELL_VIEW_MOVE, {view: this});
   }
 
   onPointerOut(evt: PIXI.InteractionEvent) {
@@ -170,6 +170,6 @@ export class CellView extends View {
     this.zIndex = 0;
     this.isDragged = false;
 
-    event.emit(EVENT_CELL_VIEW_OUT, {view: this});
+    rocket.emit(EVENT_CELL_VIEW_OUT, {view: this});
   }
 }

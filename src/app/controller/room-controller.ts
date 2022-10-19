@@ -4,7 +4,7 @@ import {v4 as uuidv4} from 'uuid';
 import {Controller} from '../../framework/controller';
 import {RoomModel} from '../model/room-model';
 import {API_KEY} from '../env/sky-way';
-import event from '../../framework/event';
+import rocket from '../../framework/rocket';
 import {EVENT_PEER_START, EVENT_ROOM_SEND_START, EVENT_ROOM_START} from '../env/event';
 import {RoomGameController} from './room-game-controller';
 import {RoomDialogController} from './room-dialog-controller';
@@ -23,8 +23,8 @@ export class RoomController extends Controller {
   }
 
   init() {
-    event.on(EVENT_ROOM_START, () => this.start());
-    event.on(EVENT_ROOM_SEND_START, () => this.sendStart());
+    rocket.on(EVENT_ROOM_START, () => this.start());
+    rocket.on(EVENT_ROOM_SEND_START, () => this.sendStart());
   }
 
   isAdmin() {
@@ -60,7 +60,7 @@ export class RoomController extends Controller {
 
   onRoomOpen() {
     console.log(`[room] room ${this.room.name} is created`);
-    event.emit(EVENT_PEER_START, {roomId: this.room.name, host: true});
+    rocket.emit(EVENT_PEER_START, {roomId: this.room.name, host: true});
 
     this.roomDialogController.setRoomId(this.room.name);
   }
